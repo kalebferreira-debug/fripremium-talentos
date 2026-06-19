@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FriPremium – Avaliação de Desempenho</title>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --accent:  #e63012;
+    --bg:      #f4f6f9;
+    --card:    #ffffff;
+    --text:    #1e2530;
+    --muted:   #6b7280;
+    --border:  #d1d5db;
+    --radius:  10px;
+    --shadow:  0 2px 12px rgba(0,0,0,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  header .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: .5px; }
+  header .subtitle { font-size: .85rem; opacity: .75; }
+  #headerUser { margin-left: auto; font-size: .85rem; background: rgba(255,255,255,.15); padding: 6px 12px; border-radius: 20px; display: none; }
+
+  .screen { display: none; max-width: 680px; margin: 40px auto; padding: 0 16px; }
+  .screen.active { display: block; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px 28px; margin-bottom: 20px; }
+  .card h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 20px; }
+
+  label { display: block; font-size: .9rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  input[type=text] {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 1rem; color: var(--text);
+    transition: border-color .2s;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--primary); }
+  .input-hint { font-size: .8rem; color: var(--muted); margin-top: 5px; }
+
+  .btn {
+    display: inline-block; padding: 12px 28px; border-radius: 8px;
+    font-size: 1rem; font-weight: 600; cursor: pointer; border: none;
+    transition: filter .15s, opacity .15s;
+  }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: #fff; width: 100%; margin-top: 18px; }
+  .btn-accent  { background: var(--accent);  color: #fff; }
+  .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+  .btn-sm      { padding: 7px 16px; font-size: .88rem; }
+
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #1e2530; color: #fff; padding: 12px 24px; border-radius: 8px;
+    font-size: .92rem; opacity: 0; pointer-events: none;
+    transition: opacity .3s; z-index: 999; max-width: 90vw; text-align: center;
+  }
+  #toast.show { opacity: 1; }
+
+  .spinner {
+    display: inline-block; width: 20px; height: 20px;
+    border: 3px solid rgba(255,255,255,.4); border-top-color: #fff;
+    border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .person-list { list-style: none; }
+  .person-list li {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .person-list li:last-child { border-bottom: none; }
+  .person-info .name { font-weight: 600; font-size: .95rem; }
+  .person-info .meta { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+  .badge {
+    display: inline-block; font-size: .72rem; font-weight: 700;
+    padding: 3px 9px; border-radius: 12px; text-transform: uppercase;
+  }
+  .badge-done    { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+
+  .dimensao-title {
+    background: var(--primary); color: #fff;
+    padding: 9px 16px; border-radius: 8px;
+    font-size: .85rem; font-weight: 700; letter-spacing: .6px;
+    text-transform: uppercase; margin: 22px 0 10px;
+  }
+  .criterio-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .criterio-row:last-child { border-bottom: none; }
+  .criterio-nome { font-size: .92rem; font-weight: 600; margin-bottom: 8px; }
+
+  .escala { display: flex; gap: 8px; flex-wrap: wrap; }
+  .escala label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 6px; border: 1.5px solid var(--border);
+    cursor: pointer; font-weight: 600; font-size: .85rem;
+    transition: background .15s, border-color .15s;
+  }
+  .escala input[type=radio] { display: none; }
+  .escala label:hover { border-color: var(--primary); background: #eef3f9; }
+  .escala input[type=radio]:checked + span { color: var(--card); }
+  .escala label:has(input:checked) { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  .gap-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  .gap-table th { background: var(--primary); color: #fff; padding: 9px 10px; text-align: left; font-size: .8rem; }
+  .gap-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  .gap-table tr:last-child td { border-bottom: none; }
+  .gap-pos { color: #166534; font-weight: 700; }
+  .gap-neg { color: #dc2626; font-weight: 700; }
+  .gap-zero{ color: var(--muted); }
+
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .summary-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; text-align: center; }
+  .summary-card .val { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+  .summary-card .lbl { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+
+  .self-eval-banner {
+    background: #eff6ff; border: 1.5px solid #bfdbfe;
+    border-radius: var(--radius); padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .self-eval-banner .txt { font-size: .92rem; }
+  .self-eval-banner .txt strong { color: var(--primary); }
+
+  @media (max-width: 480px) {
+    .card { padding: 22px 16px; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .escala { gap: 6px; }
+    .escala label { padding: 5px 9px; font-size: .8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">FriPremium</div>
+    <div class="subtitle">Sistema de Gestão de Talentos</div>
+  </div>
+  <div id="headerUser"></div>
+</header>
+
+<div id="screenLogin" class="screen active">
+  <div class="card">
+    <h2>Acesso ao Sistema</h2>
+    <label for="cpfInput">Informe seu CPF</label>
+    <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+    <p class="input-hint">Digite somente os números ou use o formato com pontos e traço.</p>
+    <button class="btn btn-primary" id="btnLogin">Entrar</button>
+  </div>
+</div>
+
+<div id="screenMenu" class="screen">
+  <div class="card">
+    <h2 id="menuGreeting">Bem-vindo</h2>
+    <div class="self-eval-banner" id="selfEvalBanner">
+      <div class="txt"><strong>Autoavaliação</strong><br>Avalie o seu próprio desempenho no ciclo atual.</div>
+      <button class="btn btn-accent btn-sm" id="btnSelfEval">Iniciar</button>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;" id="menuSubtitle"></p>
+    <ul class="person-list" id="personList"></ul>
+  </div>
+</div>
+
+<div id="screenForm" class="screen">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+    <button class="btn btn-outline btn-sm" id="btnBackToMenu">← Voltar</button>
+    <span style="font-size:.9rem;color:var(--muted);" id="formSubtitle"></span>
+  </div>
+  <div class="card">
+    <h2 id="formTitle">Avaliação</h2>
+    <div id="formCriterios"></div>
+    <button class="btn btn-primary" id="btnSubmit" style="margin-top:24px;">Salvar Avaliação</button>
+  </div>
+</div>
+
+<div id="screenRelatorio" class="screen">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+    <button class="btn btn-outline btn-sm" id="btnBackFromRelatorio">← Voltar</button>
+    <span style="font-size:.9rem;color:var(--muted);" id="relatorioSubtitle"></span>
+  </div>
+  <div class="summary-grid" id="summaryGrid"></div>
+  <div class="card">
+    <h2>Resultado por Critério</h2>
+    <div style="overflow-x:auto;">
+      <table class="gap-table">
+        <thead>
+          <tr>
+            <th>Critério</th>
+            <th>Dimensão</th>
+            <th>Líder</th>
+            <th>Auto</th>
+            <th>Gap</th>
+          </tr>
+        </thead>
+        <tbody id="gapTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwdUe4tWlrEfzwrR-vwsly_40BvaGQBA1z3p8DhUnqMTBtZQvWREFPPruM447kp6t6A/exec';
+
+let state = {
+  perfil: null,
+  criterios: [],
+  avaliadoAtual: null,
+  tipoForm: null,
+  respostasFeitas: {}
+};
+
+function $(id) { return document.getElementById(id); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toast(msg, dur = 3000) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function setLoading(btn, loading, label = 'Carregando…') {
+  if (loading) {
+    btn._label = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>' + label;
+    btn.disabled = true;
+  } else {
+    btn.innerHTML = btn._label || 'OK';
+    btn.disabled = false;
+  }
+}
+
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  return Number(n).toFixed(1);
+}
+
+function normCpf(c) { return String(c).replace(/\D/g,''); }
+
+async function api(params) {
+  const url = API + '?' + new URLSearchParams(params);
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Erro de rede: ' + r.status);
+  return r.json();
+}
+
+async function apiPost(payload) {
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!r.ok) throw new Error('Erro de rede: ' + r.status);
+  return r.json();
+}
+
+$('cpfInput').addEventListener('input', function() {
+  let v = this.value.replace(/\D/g,'');
+  if (v.length > 11) v = v.slice(0,11);
+  if (v.length > 9) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
+  else if (v.length > 6) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+  else if (v.length > 3) v = v.slice(0,3)+'.'+v.slice(3);
+  this.value = v;
+});
+
+$('cpfInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnLogin').click(); });
+
+$('btnLogin').addEventListener('click', async () => {
+  const cpf = $('cpfInput').value.trim();
+  if (normCpf(cpf).length !== 11) { toast('Informe um CPF válido com 11 dígitos.'); return; }
+  const btn = $('btnLogin');
+  setLoading(btn, true, 'Verificando…');
+  try {
+    const data = await api({ action: 'login', cpf });
+    if (!data.ok) { toast(data.erro || 'CPF não encontrado.'); return; }
+    state.perfil = data;
+    state.criterios = await api({ action: 'criterios' });
+    renderMenu();
+    showScreen('screenMenu');
+  } catch(e) {
+    toast('Falha na conexão. Tente novamente.');
+    console.error(e);
+  } finally {
+    setLoading(btn, false, 'Entrar');
+  }
+});
+
+function renderMenu() {
+  const p = state.perfil;
+  const nomeAbrev = p.nome.split(' ').slice(0,2).join(' ');
+  $('headerUser').textContent = nomeAbrev;
+  $('headerUser').style.display = 'block';
+  $('menuGreeting').textContent = 'Olá, ' + nomeAbrev;
+
+  const selfBanner = $('selfEvalBanner');
+  selfBanner.style.display = 'flex';
+
+  const list = $('personList');
+  list.innerHTML = '';
+  const avaliaveis = p.avaliaveis || [];
+
+  if (avaliaveis.length > 0) {
+    $('menuSubtitle').textContent = avaliaveis.length + ' colaborador(es) para avaliar neste ciclo';
+    avaliaveis.forEach(av => {
+      const done = state.respostasFeitas[normCpf(av.cpf)];
+      const li = document.createElement('li');
+      li.innerHTML = '<div class="person-info"><div class="name">' + av.nome + '</div><div class="meta">' + av.cargo + ' · ' + av.equipe + '</div></div><div style="display:flex;align-items:center;gap:8px;">' + (done ? '<span class="badge badge-done">Concluída</span>' : '<span class="badge badge-pending">Pendente</span>') + '<button class="btn btn-primary btn-sm" data-cpf="' + av.cpf + '" data-nome="' + av.nome + '" data-cargo="' + av.cargo + '">' + (done ? 'Rever' : 'Avaliar') + '</button></div>';
+      list.appendChild(li);
+    });
+
+    list.querySelectorAll('button[data-cpf]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.avaliadoAtual = { cpf: btn.dataset.cpf, nome: btn.dataset.nome, cargo: btn.dataset.cargo };
+        state.tipoForm = 'lider';
+        renderForm();
+        showScreen('screenForm');
+      });
+    });
+  } else {
+    $('menuSubtitle').textContent = '';
+  }
+}
+
+$('btnSelfEval').addEventListener('click', () => {
+  const p = state.perfil;
+  state.avaliadoAtual = { cpf: p.cpf, nome: p.nome, cargo: p.cargo };
+  state.tipoForm = 'auto';
+  renderForm();
+  showScreen('screenForm');
+});
+
+function renderForm() {
+  const tipo = state.tipoForm;
+  const avaliado = state.avaliadoAtual;
+  const nomeAbrev = avaliado.nome.split(' ').slice(0,2).join(' ');
+
+  $('formTitle').textContent = tipo === 'auto' ? 'Autoavaliação — ' + nomeAbrev : 'Avaliação de ' + nomeAbrev;
+  $('formSubtitle').textContent = tipo === 'auto' ? 'Responda com honestidade sobre seu próprio desempenho.' : 'Cargo: ' + avaliado.cargo;
+
+  const criterios = state.criterios;
+  const dimensoes = [...new Set(criterios.map(c => c.dimensao))];
+  const container = $('formCriterios');
+  container.innerHTML = '';
+
+  dimensoes.forEach(dim => {
+    const titulo = document.createElement('div');
+    titulo.className = 'dimensao-title';
+    titulo.textContent = dim;
+    container.appendChild(titulo);
+
+    criterios.filter(c => c.dimensao === dim).forEach(crit => {
+      const row = document.createElement('div');
+      row.className = 'criterio-row';
+      let escalaHtml = '';
+      ['EE','AE','PM','I'].forEach(cod => {
+        escalaHtml += '<label class="nota-' + cod + '"><input type="radio" name="' + crit.criterio_id + '" value="' + cod + '"><span>' + cod + '</span></label>';
+      });
+      row.innerHTML = '<div class="criterio-nome">' + crit.nome + '</div><div class="escala">' + escalaHtml + '</div>';
+      container.appendChild(row);
+    });
+  });
+}
+
+$('btnBackToMenu').addEventListener('click', () => showScreen('screenMenu'));
+
+$('btnSubmit').addEventListener('click', async () => {
+  const criterios = state.criterios;
+  const respostas = {};
+  let faltando = 0;
+
+  criterios.forEach(c => {
+    const sel = document.querySelector('input[name="' + c.criterio_id + '"]:checked');
+    if (sel) respostas[c.criterio_id] = sel.value;
+    else faltando++;
+  });
+
+  if (faltando > 0) {
+    toast('Responda todos os critérios. Faltam ' + faltando + '.');
+    return;
+  }
+
+  const btn = $('btnSubmit');
+  setLoading(btn, true, 'Salvando…');
+  try {
+    const payload = {
+      action: 'salvarRespostas',
+      tipo: state.tipoForm,
+      avaliadoCpf: state.avaliadoAtual.cpf,
+      avaliadorCpf: state.perfil.cpf,
+      respostas
+    };
+    const res = await apiPost(payload);
+    if (!res.ok) { toast(res.erro || 'Erro ao salvar.'); return; }
+
+    if (state.tipoForm === 'lider') {
+      state.respostasFeitas[normCpf(state.avaliadoAtual.cpf)] = true;
+    }
+
+    toast('✓ Avaliação salva com sucesso!', 3500);
+    renderMenu();
+    showScreen('screenMenu');
+  } catch(e) {
+    toast('Falha ao salvar. Verifique a conexão.');
+    console.error(e);
+  } finally {
+    setLoading(btn, false, 'Salvar Avaliação');
+  }
+});
+
+async function abrirRelatorio(cpf, nome) {
+  showScreen('screenRelatorio');
+  $('relatorioSubtitle').textContent = 'Carregando…';
+  $('summaryGrid').innerHTML = '';
+  $('gapTableBody').innerHTML = '';
+
+  try {
+    const data = await api({ action: 'relatorio', cpf });
+    if (!data.ok) { toast(data.erro || 'Sem dados disponíveis.'); return; }
+
+    $('relatorioSubtitle').textContent = nome;
+
+    const crits = data.criterios;
+    const comDados = crits.filter(c => c.mediaLider !== null && c.mediaAuto !== null);
+    const mediaLiderGeral = comDados.length ? (comDados.reduce((s,c) => s + c.mediaLider, 0) / comDados.length).toFixed(1) : '—';
+    const mediaAutoGeral  = comDados.length ? (comDados.reduce((s,c) => s + c.mediaAuto, 0) / comDados.length).toFixed(1) : '—';
+    const gapGeral = (mediaLiderGeral !== '—' && mediaAutoGeral !== '—') ? (mediaLiderGeral - mediaAutoGeral).toFixed(1) : '—';
+
+    $('summaryGrid').innerHTML = '<div class="summary-card"><div class="val">' + mediaLiderGeral + '</div><div class="lbl">Nota do Líder</div></div><div class="summary-card"><div class="val">' + mediaAutoGeral + '</div><div class="lbl">Autoavaliação</div></div><div class="summary-card"><div class="val">' + (gapGeral >= 0 ? '+'+gapGeral : gapGeral) + '</div><div class="lbl">Gap Médio</div></div>';
+
+    const tbody = $('gapTableBody');
+    crits.forEach(c => {
+      const gap = c.gap;
+      const cls = gap === null ? '' : (gap > 0 ? 'gap-pos' : gap < 0 ? 'gap-neg' : 'gap-zero');
+      const gapTxt = gap === null ? '—' : (gap > 0 ? '+'+fmt(gap) : fmt(gap));
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + c.nome + '</td><td>' + c.dimensao + '</td><td>' + fmt(c.mediaLider) + '</td><td>' + fmt(c.mediaAuto) + '</td><td class="' + cls + '">' + gapTxt + '</td>';
+      tbody.appendChild(tr);
+    });
+  } catch(e) {
+    toast('Erro ao carregar relatório.');
+    console.error(e);
+  }
+}
+
+$('btnBackFromRelatorio').addEventListener('click', () => showScreen('screenMenu'));
+</script>
+</body>
+</html>
