@@ -312,7 +312,7 @@ async function abrirPessoaRH(cpf,nome,cargo){
     if(relAtual.ok){const tb=$('rhGapTableBody');tb.innerHTML='';relAtual.criterios.forEach(c=>{const lN=c.mediaLider!==null?c.mediaLider/10*PESO:null,aN=c.mediaAuto!==null?c.mediaAuto/10*PESO:null,g=lN!==null&&aN!==null?lN-aN:null,cls=g===null?'':g>0?'gap-pos':g<0?'gap-neg':'gap-zero',gt=g===null?'—':(g>0?'+':'')+fmt(g);const tr=document.createElement('tr');tr.innerHTML='<td>'+c.nome+'</td><td>'+c.dimensao+'</td><td>'+fmt(lN)+'</td><td>'+fmt(aN)+'</td><td class="'+cls+'">'+gt+'</td>';tb.appendChild(tr);});}
   }catch(e){toast('Erro ao carregar dados.');}
 }
-$('btnBackRHPessoa').addEventListener('click',()=>showScreen('screenRH'));
+$('btnBackRHPessoa').addEventListener('click',()=>showScreen('screenRH'));window.toggleEquipe=toggleEquipe;window.abrirPessoaRH=abrirPessoaRH;
 </script>
 </body>
 </html>
