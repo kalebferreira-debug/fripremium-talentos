@@ -8,7 +8,9 @@
 :root{--primary:#c8102e;--accent:#b00020;--bg:#f4f6f9;--card:#fff;--text:#1e2530;--muted:#6b7280;--border:#d1d5db;--green:#166534;--gbg:#dcfce7;--yellow:#854d0e;--ybg:#fef9c3;--red:#dc2626;--r:10px;--sh:0 2px 12px rgba(0,0,0,.1);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-header{background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+header{background:var(--primary);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.hlogo{height:48px;width:auto;object-fit:contain;display:block;}
+.hlogo-placeholder{display:none;}
 .logo{font-size:1.3rem;font-weight:700;}
 .subtitle{font-size:.82rem;opacity:.75;}
 #hu{margin-left:auto;font-size:.82rem;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:20px;display:none;}
@@ -93,7 +95,8 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 </head>
 <body>
 <header>
-  <div>
+  <img src="logo.png" alt="FriPremium" class="hlogo" onerror="this.style.display='none';document.getElementById('htxt').style.display='block'">
+  <div id="htxt" style="display:none">
     <div class="logo">Frigorífico FriPremium</div>
     <div class="subtitle">Sistema de Gestão de Talentos</div>
   </div>
