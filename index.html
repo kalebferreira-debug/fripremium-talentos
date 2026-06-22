@@ -5,19 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Frigorífico FriPremium – Avaliação de Desempenho</title>
 <style>
-:root{--primary:#c8102e;--accent:#b00020;--bg:#f4f6f9;--card:#fff;--text:#1e2530;--muted:#6b7280;--border:#d1d5db;--green:#166534;--gbg:#dcfce7;--yellow:#854d0e;--ybg:#fef9c3;--red:#dc2626;--r:10px;--sh:0 2px 12px rgba(0,0,0,.1);}
+:root{--primary:#c8102e;--bg:#f4f6f9;--card:#fff;--text:#1e2530;--muted:#6b7280;--border:#d1d5db;--green:#166534;--gbg:#dcfce7;--yellow:#854d0e;--ybg:#fef9c3;--red:#dc2626;--r:10px;--sh:0 2px 12px rgba(0,0,0,.1);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-header{background:var(--primary);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
-.hlogo{height:48px;width:auto;object-fit:contain;display:block;}
-.hlogo-placeholder{display:none;}
-.logo{font-size:1.3rem;font-weight:700;}
-.subtitle{font-size:.82rem;opacity:.75;}
+header{background:var(--primary);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.hlogo{height:46px;width:auto;object-fit:contain;display:block;}
+.logo{font-size:1.25rem;font-weight:700;}
+.subtitle{font-size:.8rem;opacity:.75;}
 #hu{margin-left:auto;font-size:.82rem;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:20px;display:none;}
 .sc{display:none;max-width:740px;margin:32px auto;padding:0 16px;}
 .sc.on{display:block;}
-.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:28px 24px;margin-bottom:18px;}
-.card h2{font-size:1.15rem;color:var(--primary);margin-bottom:18px;}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:26px 22px;margin-bottom:18px;}
+.card h2{font-size:1.1rem;color:var(--primary);margin-bottom:16px;}
 label{display:block;font-size:.9rem;font-weight:600;margin-bottom:6px;}
 input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:1rem;}
 input[type=text]:focus{outline:none;border-color:var(--primary);}
@@ -32,9 +31,11 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 #toast.on{opacity:1;}
 .spin{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:7px;}
 @keyframes sp{to{transform:rotate(360deg);}}
+/* Menu */
 .seb{background:#fff5f5;border:1.5px solid #fca5a5;border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .seb .txt{font-size:.9rem;}
 .seb .txt strong{color:var(--primary);}
+.seb-block{background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:var(--r);padding:14px 18px;margin-bottom:14px;font-size:.88rem;color:var(--muted);}
 .pl{list-style:none;}
 .pl li{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:8px;}
 .pl li:last-child{border-bottom:none;}
@@ -43,6 +44,8 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 .badge{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;white-space:nowrap;}
 .bd{background:var(--gbg);color:var(--green);}
 .bp2{background:var(--ybg);color:var(--yellow);}
+.blk{background:#f1f5f9;color:var(--muted);}
+/* Formulário */
 .dt{background:var(--primary);color:#fff;padding:8px 14px;border-radius:7px;font-size:.82rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin:20px 0 10px;}
 .dd{font-size:.79rem;color:rgba(255,255,255,.85);margin-top:3px;font-weight:400;font-style:italic;}
 .cr{padding:14px 0;border-bottom:1px solid var(--border);}
@@ -54,17 +57,26 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 .esc input[type=radio]{display:none;}
 .esc label:hover{border-color:var(--primary);background:#fff0f2;}
 .esc label:has(input:checked){background:var(--primary);border-color:var(--primary);color:#fff;}
-.ga{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:14px 16px;margin-bottom:18px;}
-.ga h3{font-size:.88rem;font-weight:700;color:#9a3412;margin-bottom:10px;}
-.gi{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #fed7aa;font-size:.82rem;}
-.gi:last-child{border-bottom:none;}
-.gi .ac{color:var(--green);font-weight:700;}
-.gi .ab{color:var(--red);font-weight:700;}
-.eq{margin-bottom:16px;}
-.eh{display:flex;align-items:center;justify-content:space-between;background:#f1f5f9;border-radius:8px;padding:10px 14px;margin-bottom:6px;cursor:pointer;}
+/* Tela de resultado */
+.nota-box{border-radius:var(--r);padding:20px;text-align:center;flex:1;}
+.nota-box .val{font-size:2.8rem;font-weight:700;line-height:1;}
+.nota-box .lbl{font-size:.8rem;margin-top:6px;opacity:.8;}
+.nota-box .sub{font-size:.72rem;margin-top:4px;opacity:.65;}
+.nota-oficial{background:#c8102e;color:#fff;}
+.nota-auto{background:#1e2530;color:#fff;}
+.nota-sem{background:#f1f5f9;color:var(--muted);}
+.notas-row{display:flex;gap:12px;margin-bottom:20px;}
+.resultado-aviso{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#92400e;margin-bottom:16px;}
+/* RH */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.sc2{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;text-align:center;}
+.sc2 .val{font-size:1.7rem;font-weight:700;color:var(--primary);}
+.sc2 .lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.eq{margin-bottom:14px;}
+.eh{display:flex;align-items:center;justify-content:space-between;background:#f1f5f9;border-radius:8px;padding:10px 14px;margin-bottom:5px;cursor:pointer;}
 .en{font-weight:700;font-size:.93rem;}
 .es{font-size:.79rem;color:var(--muted);}
-.ep{height:5px;background:#e5e7eb;border-radius:3px;margin-bottom:10px;}
+.ep{height:5px;background:#e5e7eb;border-radius:3px;margin-bottom:8px;}
 .eb2{height:100%;background:var(--primary);border-radius:3px;}
 .ebody{display:none;}
 .ebody.on{display:block;}
@@ -72,10 +84,6 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 .rp:last-child{border-bottom:none;}
 .rpi .nm{font-size:.87rem;font-weight:600;}
 .rpi .mt{font-size:.74rem;color:var(--muted);}
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
-.sc2{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;text-align:center;}
-.sc2 .val{font-size:1.7rem;font-weight:700;color:var(--primary);}
-.sc2 .lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
 .ab2{background:#f1f5f9;border-radius:8px;padding:12px 16px;margin-bottom:18px;}
 .al{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;}
 .ab3{height:10px;background:#e5e7eb;border-radius:5px;position:relative;}
@@ -90,7 +98,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 .gz{color:var(--muted);}
 .br{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .br .ctx{font-size:.85rem;color:var(--muted);}
-@media(max-width:500px){.card{padding:18px 14px;}.sg{grid-template-columns:1fr 1fr;}.esc label{padding:6px 9px;font-size:.76rem;}}
+@media(max-width:500px){.card{padding:18px 14px;}.sg{grid-template-columns:1fr 1fr;}.esc label{padding:6px 9px;font-size:.76rem;}.notas-row{flex-direction:column;}}
 </style>
 </head>
 <body>
@@ -103,6 +111,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
   <div id="hu"></div>
 </header>
 
+<!-- LOGIN -->
 <div id="sLogin" class="sc on">
   <div class="card">
     <h2>Acesso ao Sistema</h2>
@@ -113,18 +122,17 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
   </div>
 </div>
 
+<!-- MENU COLABORADOR/LIDER -->
 <div id="sMenu" class="sc">
   <div class="card">
     <h2 id="mGr">Bem-vindo</h2>
-    <div class="seb" id="seb">
-      <div class="txt"><strong>Minha Autoavaliação</strong><br>Avalie o seu próprio desempenho no ciclo atual.</div>
-      <button class="btn bp sm" id="btnA">Iniciar</button>
-    </div>
+    <div id="sebWrap"></div>
     <p class="hint" id="mSub" style="margin-bottom:10px;"></p>
     <ul class="pl" id="pList"></ul>
   </div>
 </div>
 
+<!-- FORMULÁRIO DE AVALIAÇÃO -->
 <div id="sForm" class="sc">
   <div class="br">
     <button class="btn bo sm" id="btnBM">← Voltar</button>
@@ -137,6 +145,23 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
   </div>
 </div>
 
+<!-- RESULTADO APÓS SALVAR -->
+<div id="sRes" class="sc">
+  <div class="card">
+    <h2 id="resTit">Resultado da Avaliação</h2>
+    <div class="notas-row" id="resNotas"></div>
+    <div id="resAviso"></div>
+    <div id="resMsgLider" style="display:none;">
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px;">Você está vendo a nota de <strong id="resNomeAvaliado"></strong>. A nota do líder é a nota oficial.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn bp" id="btnResVoltar" style="flex:1;margin-top:0;">Voltar ao Menu</button>
+      <button class="btn bo" id="btnResRefazer" style="flex:1;margin-top:0;display:none;">Refazer Avaliação</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL RH -->
 <div id="sRH" class="sc">
   <div class="br">
     <button class="btn bo sm" id="btnBRH">← Sair</button>
@@ -152,6 +177,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
   </div>
 </div>
 
+<!-- DETALHE PESSOA RH -->
 <div id="sRHP" class="sc">
   <div class="br">
     <button class="btn bo sm" id="btnBRHP">← Voltar ao Painel</button>
@@ -164,22 +190,6 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
     <div style="overflow-x:auto"><table class="gt">
       <thead><tr><th>Critério</th><th>Dimensão</th><th>Líder</th><th>Auto</th><th>Gap</th></tr></thead>
       <tbody id="rhGt"></tbody>
-    </table></div>
-  </div>
-</div>
-
-<div id="sRel" class="sc">
-  <div class="br">
-    <button class="btn bo sm" id="btnBRel">← Voltar</button>
-    <span class="ctx" id="relSub"></span>
-  </div>
-  <div id="gapBox"></div>
-  <div class="sg" id="relSg"></div>
-  <div class="card">
-    <h2>Resultado por Critério</h2>
-    <div style="overflow-x:auto"><table class="gt">
-      <thead><tr><th>Critério</th><th>Dimensão</th><th>Líder</th><th>Auto</th><th>Gap</th></tr></thead>
-      <tbody id="relGt"></tbody>
     </table></div>
   </div>
 </div>
@@ -226,35 +236,31 @@ var DDESC = {
   'Individual':'Características que aparecem nas atitudes, comportamentos e são um diferencial do funcionário'
 };
 var PESO = 100/24;
-var GAP_MIN = 2;
-var st = {perfil:null,crits:[],ciclos:[],avAtual:null,tipo:null,feitos:{}};
+
+// Estado global
+var st = {
+  perfil:null, crits:[], ciclos:[], avAtual:null, tipo:null,
+  submissoes:{},   // cpf -> { lider: N, auto: N } contagem de envios no ciclo atual
+  temLider:{}      // cpf -> true se já tem avaliação do líder
+};
 
 function g(id){ return document.getElementById(id); }
-
 function show(id){
-  var all = document.querySelectorAll('.sc');
+  var all=document.querySelectorAll('.sc');
   for(var i=0;i<all.length;i++) all[i].classList.remove('on');
   g(id).classList.add('on');
   window.scrollTo(0,0);
 }
-
 function toast(msg,dur){
   var t=g('toast'); t.textContent=msg; t.classList.add('on');
   setTimeout(function(){ t.classList.remove('on'); },dur||3200);
 }
-
 function load(btn,on,lbl){
   if(on){ btn._l=btn.innerHTML; btn.innerHTML='<span class="spin"></span>'+(lbl||'Carregando...'); btn.disabled=true; }
   else{ btn.innerHTML=btn._l||'OK'; btn.disabled=false; }
 }
-
-function fmt(n,d){
-  if(n===null||n===undefined) return '--';
-  return Number(n).toFixed(d||1);
-}
-
+function fmt(n,d){ if(n===null||n===undefined) return '--'; return Number(n).toFixed(d||1); }
 function nc(c){ return String(c).replace(/\D/g,''); }
-
 function calcNota(cs){
   var v=cs.filter(function(c){ return c.mediaLider!==null&&c.mediaAuto!==null; });
   if(!v.length) return null;
@@ -262,18 +268,23 @@ function calcNota(cs){
   for(var i=0;i<v.length;i++) s+=((v[i].mediaLider+v[i].mediaAuto)/2/10)*PESO;
   return s;
 }
-
+function calcNotaTipo(cs, tipo){
+  // tipo: 'lider' ou 'auto'
+  var campo = tipo==='lider' ? 'mediaLider' : 'mediaAuto';
+  var v=cs.filter(function(c){ return c[campo]!==null; });
+  if(!v.length) return null;
+  var s=0;
+  for(var i=0;i<v.length;i++) s+=(v[i][campo]/10)*PESO;
+  return s;
+}
 function apiGet(params, cb){
-  var url = API+'?'+Object.keys(params).map(function(k){ return encodeURIComponent(k)+'='+encodeURIComponent(params[k]); }).join('&');
+  var url=API+'?'+Object.keys(params).map(function(k){ return encodeURIComponent(k)+'='+encodeURIComponent(params[k]); }).join('&');
   fetch(url).then(function(r){ return r.json(); }).then(cb).catch(function(e){ toast('Erro de conexão.'); console.error(e); });
 }
-
 function apiPost(payload, cb){
-  // Apps Script nao suporta CORS para POST de origens externas.
-  // Solucao: enviar como GET com payload serializado em parametro.
-  var params = Object.assign({}, payload);
-  params.respostas = JSON.stringify(payload.respostas);
-  apiGet(params, cb);
+  var params=Object.assign({},payload);
+  params.respostas=JSON.stringify(payload.respostas);
+  apiGet(params,cb);
 }
 
 // CPF mask
@@ -300,48 +311,136 @@ g('btnE').addEventListener('click',function(){
     st.perfil=data; st.crits=crits; st.ciclos=ciclos;
     g('hu').textContent=data.nome.split(' ').slice(0,2).join(' ');
     g('hu').style.display='block';
-    if(data.nivel==='admin'){ loadRH(); } else { renderMenu(); show('sMenu'); }
+    if(data.nivel==='admin'){ loadRH(); }
+    else { carregarSubmissoes(function(){ renderMenu(); show('sMenu'); }); }
   }
   apiGet({action:'login',cpf:cpf},function(d){ data=d; check(); });
   apiGet({action:'criterios'},function(d){ crits=d; check(); });
   apiGet({action:'ciclos'},function(d){ ciclos=d; check(); });
 });
 
+// Carregar contagem de submissões e verificar se já tem nota do líder
+function carregarSubmissoes(cb){
+  apiGet({action:'respostasRH'},function(rh){
+    var ca=cicloAberto();
+    var cid=ca?ca.ciclo_id:null;
+    var lider=rh.lider||[], auto=rh.auto||[];
+    var meuCpf=nc(st.perfil.cpf);
+    st.submissoes={};
+    st.temLider={};
+
+    // Contar submissões do lider para cada avaliado
+    var contLider={};
+    lider.forEach(function(r){
+      if(String(r.ciclo_id)!==String(cid)) return;
+      var avCpf=nc(r.avaliado_cpf);
+      var avdorCpf=nc(r.avaliador_cpf);
+      // submissões que EU fiz como líder
+      if(avdorCpf===meuCpf){
+        if(!contLider[avCpf]) contLider[avCpf]=0;
+        contLider[avCpf]++;
+      }
+      // verificar se colaborador já tem nota do líder
+      if(!st.temLider[avCpf]) st.temLider[avCpf]=false;
+      st.temLider[avCpf]=true;
+    });
+    // Contar por avaliado (dividir por 24 critérios = 1 submissão)
+    Object.keys(contLider).forEach(function(cpf){
+      if(!st.submissoes[cpf]) st.submissoes[cpf]={lider:0,auto:0};
+      st.submissoes[cpf].lider=Math.round(contLider[cpf]/24);
+    });
+
+    // Contar autoavaliações do próprio colaborador
+    var contAuto=0;
+    auto.forEach(function(r){
+      if(String(r.ciclo_id)!==String(cid)) return;
+      if(nc(r.avaliado_cpf)===meuCpf) contAuto++;
+    });
+    if(!st.submissoes[meuCpf]) st.submissoes[meuCpf]={lider:0,auto:0};
+    st.submissoes[meuCpf].auto=Math.round(contAuto/24);
+    cb();
+  });
+}
+
+function cicloAberto(){
+  for(var i=0;i<st.ciclos.length;i++) if(st.ciclos[i].status==='aberto') return st.ciclos[i];
+  return null;
+}
+
 // MENU
 function renderMenu(){
   var p=st.perfil;
   g('mGr').textContent='Olá, '+p.nome.split(' ').slice(0,2).join(' ')+'!';
-  g('seb').style.display='flex';
+  var meuCpf=nc(p.cpf);
+  var subAuto=(st.submissoes[meuCpf]||{}).auto||0;
+  var jaTemLider=st.temLider[meuCpf]||false;
+
+  // Bloco de autoavaliação
+  var sebWrap=g('sebWrap'); sebWrap.innerHTML='';
+  if(subAuto===0){
+    // Pode fazer pela primeira vez
+    var div=document.createElement('div'); div.className='seb';
+    div.innerHTML='<div class="txt"><strong>Minha Autoavaliação</strong><br>Avalie o seu próprio desempenho no ciclo atual.</div>';
+    var btnA=document.createElement('button'); btnA.className='btn bp sm'; btnA.textContent='Iniciar';
+    btnA.addEventListener('click',function(){ iniciarAuto(); });
+    div.appendChild(btnA); sebWrap.appendChild(div);
+  } else if(subAuto===1 && !jaTemLider){
+    // Pode refazer UMA vez (líder ainda não avaliou)
+    var div=document.createElement('div'); div.className='seb';
+    div.innerHTML='<div class="txt"><strong>Minha Autoavaliação</strong><br>Você já enviou. Pode refazer uma vez enquanto o líder não avaliar.</div>';
+    var btnA=document.createElement('button'); btnA.className='btn bo sm'; btnA.textContent='Rever';
+    btnA.addEventListener('click',function(){ iniciarAuto(); });
+    div.appendChild(btnA); sebWrap.appendChild(div);
+  } else if(subAuto>=1){
+    // Bloqueada (ou líder já avaliou, ou já refez)
+    var msg = jaTemLider
+      ? 'Sua autoavaliação foi enviada. A reunião de feedback foi agendada com seu líder.'
+      : 'Você já utilizou sua reavaliação. Aguarde o retorno do seu líder.';
+    var div=document.createElement('div'); div.className='seb-block';
+    div.innerHTML='<strong>Minha Autoavaliação</strong><br>'+msg;
+    sebWrap.appendChild(div);
+  }
+
+  // Lista de avaliáveis (só para líder/encarregado)
   var list=g('pList'); list.innerHTML='';
   var av=p.avaliaveis||[];
+  // Filtrar: não mostrar a si mesmo na lista de avaliáveis
+  av=av.filter(function(a){ return nc(a.cpf)!==meuCpf; });
   g('mSub').textContent=av.length?av.length+' colaborador(es) para avaliar neste ciclo:':'';
+
   for(var i=0;i<av.length;i++){
     (function(a){
-      var done=st.feitos[nc(a.cpf)];
+      var avCpf=nc(a.cpf);
+      var sub=(st.submissoes[avCpf]||{}).lider||0;
+      var podeAvaliar=sub<2; // máximo 2 submissões
+      var statusTxt=sub===0?'Pendente':sub===1?'Avaliado (1ª vez)':'Concluído';
+      var badgeCls=sub===0?'bp2':sub===1?'bd':'blk';
       var li=document.createElement('li');
-      li.innerHTML='<div class="pi"><div class="nm">'+a.nome+'</div><div class="mt">'+a.cargo+' - '+a.equipe+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+(done?'bd':'bp2')+'">'+(done?'Concluída':'Pendente')+'</span></div>';
-      var btn=document.createElement('button');
-      btn.className='btn bp sm';
-      btn.textContent=done?'Rever':'Avaliar';
-      btn.addEventListener('click',function(){
-        st.avAtual={cpf:a.cpf,nome:a.nome,cargo:a.cargo};
-        st.tipo='lider';
-        renderForm();
-        show('sForm');
-      });
-      li.querySelector('div:last-child').appendChild(btn);
+      li.innerHTML='<div class="pi"><div class="nm">'+a.nome+'</div><div class="mt">'+a.cargo+' - '+a.equipe+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+badgeCls+'">'+statusTxt+'</span></div>';
+      if(podeAvaliar){
+        var btn=document.createElement('button');
+        btn.className='btn bp sm';
+        btn.textContent=sub===0?'Avaliar':'Reavaliar';
+        btn.addEventListener('click',function(){
+          st.avAtual={cpf:a.cpf,nome:a.nome,cargo:a.cargo};
+          st.tipo='lider';
+          renderForm();
+          show('sForm');
+        });
+        li.querySelector('div:last-child').appendChild(btn);
+      }
       list.appendChild(li);
     })(av[i]);
   }
 }
 
-g('btnA').addEventListener('click',function(){
+function iniciarAuto(){
   var p=st.perfil;
   st.avAtual={cpf:p.cpf,nome:p.nome,cargo:p.cargo};
   st.tipo='auto';
   renderForm();
   show('sForm');
-});
+}
 
 // FORMULÁRIO
 function renderForm(){
@@ -357,14 +456,13 @@ function renderForm(){
   for(var d=0;d<dims.length;d++){
     var dim=dims[d];
     var divD=document.createElement('div');
-    var dd=DDESC[dim]?'<div class="dd">'+DDESC[dim]+'</div>':'';
-    divD.innerHTML='<div class="dt">'+dim+dd+'</div>';
+    var dd2=DDESC[dim]?'<div class="dd">'+DDESC[dim]+'</div>':'';
+    divD.innerHTML='<div class="dt">'+dim+dd2+'</div>';
     cont.appendChild(divD);
     var filts=st.crits.filter(function(c){ return c.dimensao===dim; });
     for(var k=0;k<filts.length;k++){
       (function(crit){
-        var row=document.createElement('div');
-        row.className='cr';
+        var row=document.createElement('div'); row.className='cr';
         var desc=CDESC[crit.criterio_id]||'';
         var bts='';
         for(var e=0;e<ESCALA.length;e++){
@@ -390,75 +488,139 @@ g('btnSv').addEventListener('click',function(){
   apiPost({action:'salvarRespostas',tipo:st.tipo,avaliadoCpf:st.avAtual.cpf,avaliadorCpf:st.perfil.cpf,respostas:res},function(r){
     load(btn,false,'Salvar Avaliação');
     if(!r.ok){ toast(r.erro||'Erro ao salvar.'); return; }
-    if(st.tipo==='lider') st.feitos[nc(st.avAtual.cpf)]=true;
-    toast('Avaliação salva com sucesso!',3500);
-    renderMenu();
-    show('sMenu');
+    // Atualizar contagem local
+    var avCpf=nc(st.avAtual.cpf);
+    if(!st.submissoes[avCpf]) st.submissoes[avCpf]={lider:0,auto:0};
+    if(st.tipo==='lider') st.submissoes[avCpf].lider++;
+    else st.submissoes[avCpf].auto++;
+    // Buscar resultado e mostrar tela de resultado
+    buscarEMostrarResultado();
   });
 });
 
-// RELATÓRIO COLABORADOR (futuro: acesso via botão no menu)
-g('btnBRel').addEventListener('click',function(){ show('sMenu'); });
+function buscarEMostrarResultado(){
+  var avCpf=st.avAtual.cpf;
+  var tipo=st.tipo;
+  apiGet({action:'relatorio',cpf:avCpf},function(rel){
+    var notaLider=null, notaAuto=null;
+    if(rel.ok){
+      notaLider=calcNotaTipo(rel.criterios,'lider');
+      notaAuto=calcNotaTipo(rel.criterios,'auto');
+    }
+    mostrarResultado(tipo,notaLider,notaAuto);
+  });
+}
 
-// PAINEL RH
+function mostrarResultado(tipo,notaLider,notaAuto){
+  var av=st.avAtual;
+  var meuCpf=nc(st.perfil.cpf);
+  var avCpf=nc(av.cpf);
+  var isAutoAvaliacao=(tipo==='auto');
+
+  if(isAutoAvaliacao){
+    g('resTit').textContent='Sua Avaliação foi Salva!';
+    g('resMsgLider').style.display='none';
+  } else {
+    g('resTit').textContent='Avaliação Salva — '+av.nome.split(' ').slice(0,2).join(' ');
+    g('resMsgLider').style.display='block';
+    g('resNomeAvaliado').textContent=av.nome.split(' ').slice(0,2).join(' ');
+  }
+
+  // Notas lado a lado
+  var notasDiv=g('resNotas'); notasDiv.innerHTML='';
+
+  // Nota do líder (nota oficial)
+  var divL=document.createElement('div');
+  divL.className='nota-box '+(notaLider!==null?'nota-oficial':'nota-sem');
+  divL.innerHTML='<div class="val">'+(notaLider!==null?fmt(notaLider):'--')+'</div><div class="lbl">Nota do Líder</div><div class="sub">Nota oficial do ciclo</div>';
+  notasDiv.appendChild(divL);
+
+  // Nota da autoavaliação
+  var divA=document.createElement('div');
+  divA.className='nota-box '+(notaAuto!==null?'nota-auto':'nota-sem');
+  divA.innerHTML='<div class="val">'+(notaAuto!==null?fmt(notaAuto):'--')+'</div><div class="lbl">Autoavaliação</div><div class="sub">Para referência</div>';
+  notasDiv.appendChild(divA);
+
+  // Aviso
+  var aviso=g('resAviso'); aviso.innerHTML='';
+  if(isAutoAvaliacao){
+    var subAuto=(st.submissoes[meuCpf]||{}).auto||0;
+    var jaTemLider=st.temLider[meuCpf]||false;
+    if(subAuto===1 && !jaTemLider){
+      aviso.innerHTML='<div class="resultado-aviso">Você pode refazer sua autoavaliação uma vez, enquanto seu líder ainda não tiver avaliado você.</div>';
+    } else if(subAuto>=2 || jaTemLider){
+      aviso.innerHTML='<div class="resultado-aviso">Sua avaliação está finalizada. Aguarde a reunião de feedback com seu líder.</div>';
+    }
+  } else {
+    var subLider=(st.submissoes[avCpf]||{}).lider||0;
+    if(subLider===1){
+      aviso.innerHTML='<div class="resultado-aviso">Você pode reavaliar este colaborador uma vez após a reunião de feedback.</div>';
+    } else {
+      aviso.innerHTML='<div class="resultado-aviso">Esta é a avaliação final deste colaborador no ciclo atual.</div>';
+    }
+  }
+
+  // Botão refazer
+  var btnRef=g('btnResRefazer');
+  var podeRefazer=false;
+  if(isAutoAvaliacao){
+    var subAuto=(st.submissoes[meuCpf]||{}).auto||0;
+    podeRefazer=(subAuto===1 && !(st.temLider[meuCpf]||false));
+  } else {
+    var subLider=(st.submissoes[avCpf]||{}).lider||0;
+    podeRefazer=(subLider===1);
+  }
+  btnRef.style.display=podeRefazer?'':'none';
+
+  show('sRes');
+}
+
+g('btnResVoltar').addEventListener('click',function(){
+  carregarSubmissoes(function(){ renderMenu(); show('sMenu'); });
+});
+
+g('btnResRefazer').addEventListener('click',function(){
+  renderForm();
+  show('sForm');
+});
+
+// RH
 g('btnBRH').addEventListener('click',function(){
   st.perfil=null; g('hu').style.display='none'; g('cpf').value=''; show('sLogin');
 });
 
 function loadRH(){
-  var ca=null;
-  for(var i=0;i<st.ciclos.length;i++){ if(st.ciclos[i].status==='aberto'){ ca=st.ciclos[i]; break; } }
+  var ca=cicloAberto();
   g('rhCl').textContent=ca?ca.label:'';
   var todos=st.perfil.avaliaveis||[];
-  var cicloId=ca?ca.ciclo_id:null;
-
+  var cid=ca?ca.ciclo_id:null;
   apiGet({action:'respostasRH'},function(rh){
     var lider=rh.lider||[], auto=rh.auto||[];
     var comL={}, comA={};
-    for(var i=0;i<lider.length;i++){
-      if(String(lider[i].ciclo_id)===String(cicloId)) comL[nc(lider[i].avaliado_cpf)]=1;
-    }
-    for(var i=0;i<auto.length;i++){
-      if(String(auto[i].ciclo_id)===String(cicloId)) comA[nc(auto[i].avaliado_cpf)]=1;
-    }
-    var avCount=0;
-    for(var i=0;i<todos.length;i++){
-      if(comL[nc(todos[i].cpf)]&&comA[nc(todos[i].cpf)]) avCount++;
-    }
+    lider.forEach(function(r){ if(String(r.ciclo_id)===String(cid)) comL[nc(r.avaliado_cpf)]=1; });
+    auto.forEach(function(r){ if(String(r.ciclo_id)===String(cid)) comA[nc(r.avaliado_cpf)]=1; });
+    var avCount=todos.filter(function(p){ return comL[nc(p.cpf)]&&comA[nc(p.cpf)]; }).length;
     g('rhSg').innerHTML='<div class="sc2"><div class="val">'+todos.length+'</div><div class="lbl">Total</div></div><div class="sc2"><div class="val" style="color:var(--green)">'+avCount+'</div><div class="lbl">Avaliados</div></div><div class="sc2"><div class="val" style="color:var(--red)">'+(todos.length-avCount)+'</div><div class="lbl">Pendentes</div></div>';
-
     var eqs={};
-    for(var i=0;i<todos.length;i++){
-      var eq=todos[i].equipe||'Sem equipe';
-      if(!eqs[eq]) eqs[eq]=[];
-      eqs[eq].push(todos[i]);
-    }
+    todos.forEach(function(p){ var e=p.equipe||'Sem equipe'; if(!eqs[e]) eqs[e]=[]; eqs[e].push(p); });
     var nomes=Object.keys(eqs).sort();
     var cont=g('rhEq'); cont.innerHTML='';
-    for(var e=0;e<nomes.length;e++){
-      (function(eq){
-        var ms=eqs[eq];
-        var avE=0;
-        for(var j=0;j<ms.length;j++){ if(comL[nc(ms[j].cpf)]&&comA[nc(ms[j].cpf)]) avE++; }
-        var pct=ms.length?Math.round(avE/ms.length*100):0;
-        var sec=document.createElement('div');
-        sec.className='eq';
-        var rows='';
-        for(var j=0;j<ms.length;j++){
-          var ok=comL[nc(ms[j].cpf)]&&comA[nc(ms[j].cpf)];
-          rows+='<div class="rp"><div class="rpi"><div class="nm">'+ms[j].nome+'</div><div class="mt">'+ms[j].cargo+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+(ok?'bd':'bp2')+'">'+(ok?'Avaliado':'Pendente')+'</span><button class="btn bs sm" data-cpf="'+ms[j].cpf+'" data-nome="'+ms[j].nome+'" data-cargo="'+ms[j].cargo+'">Ver nota</button></div></div>';
-        }
-        sec.innerHTML='<div class="eh" onclick="this.nextElementSibling.nextElementSibling.classList.toggle(\'on\')"><div><div class="en">'+eq+'</div><div class="es">'+avE+' de '+ms.length+' avaliados</div></div><span style="color:var(--muted);font-size:.82rem">'+pct+'%</span></div><div class="ep"><div class="eb2" style="width:'+pct+'%"></div></div><div class="ebody">'+rows+'</div>';
-        cont.appendChild(sec);
-        // botões Ver nota
-        var btns=sec.querySelectorAll('button[data-cpf]');
-        for(var j=0;j<btns.length;j++){
-          btns[j].addEventListener('click',function(){
-            verNotaRH(this.dataset.cpf,this.dataset.nome,this.dataset.cargo);
-          });
-        }
-      })(nomes[e]);
-    }
+    nomes.forEach(function(eq){
+      var ms=eqs[eq];
+      var avE=ms.filter(function(p){ return comL[nc(p.cpf)]&&comA[nc(p.cpf)]; }).length;
+      var pct=ms.length?Math.round(avE/ms.length*100):0;
+      var sec=document.createElement('div'); sec.className='eq';
+      var rows='';
+      ms.forEach(function(p){
+        var ok=comL[nc(p.cpf)]&&comA[nc(p.cpf)];
+        rows+='<div class="rp"><div class="rpi"><div class="nm">'+p.nome+'</div><div class="mt">'+p.cargo+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+(ok?'bd':'bp2')+'">'+(ok?'Avaliado':'Pendente')+'</span><button class="btn bs sm" data-cpf="'+p.cpf+'" data-nome="'+p.nome+'" data-cargo="'+p.cargo+'">Ver nota</button></div></div>';
+      });
+      sec.innerHTML='<div class="eh" onclick="this.nextElementSibling.nextElementSibling.classList.toggle(\'on\')"><div><div class="en">'+eq+'</div><div class="es">'+avE+' de '+ms.length+' avaliados</div></div><span style="color:var(--muted);font-size:.82rem">'+pct+'%</span></div><div class="ep"><div class="eb2" style="width:'+pct+'%"></div></div><div class="ebody">'+rows+'</div>';
+      cont.appendChild(sec);
+      sec.querySelectorAll('button[data-cpf]').forEach(function(btn){
+        btn.addEventListener('click',function(){ verNotaRH(this.dataset.cpf,this.dataset.nome,this.dataset.cargo); });
+      });
+    });
     show('sRH');
   });
 }
@@ -466,39 +628,31 @@ function loadRH(){
 function verNotaRH(cpf,nome,cargo){
   g('rhPS').textContent=nome+' — '+cargo;
   g('rhPSg').innerHTML='<div class="sc2"><div class="val">...</div><div class="lbl">Carregando</div></div>';
-  g('rhAb').innerHTML='';
-  g('rhGt').innerHTML='';
+  g('rhAb').innerHTML=''; g('rhGt').innerHTML='';
   show('sRHP');
-  var ca=null,cf=null;
-  for(var i=0;i<st.ciclos.length;i++){
-    if(st.ciclos[i].status==='aberto') ca=st.ciclos[i];
-    if(st.ciclos[i].status==='fechado') cf=st.ciclos[i];
-  }
+  var ca=cicloAberto();
+  var cf=null;
+  for(var i=st.ciclos.length-1;i>=0;i--){ if(st.ciclos[i].status==='fechado'){ cf=st.ciclos[i]; break; } }
   apiGet({action:'relatorio',cpf:cpf},function(rel){
-    var nA=rel.ok?calcNota(rel.criterios):null;
-    var la=ca?ca.label:'Ciclo atual';
-    var lf=cf?cf.label:'Ciclo anterior';
+    var nA=rel.ok?calcNotaTipo(rel.criterios,'lider'):null;
+    var la=ca?ca.label:'Ciclo atual', lf=cf?cf.label:'Ciclo anterior';
     if(cf){
       apiGet({action:'relatorioCiclo',cpf:cpf,cicloId:cf.ciclo_id},function(rAnt){
-        var nAnt=rAnt.ok?calcNota(rAnt.criterios):null;
+        var nAnt=rAnt.ok?calcNotaTipo(rAnt.criterios,'lider'):null;
         renderPessoaRH(rel,nA,nAnt,la,lf);
       });
-    } else {
-      renderPessoaRH(rel,nA,null,la,lf);
-    }
+    } else { renderPessoaRH(rel,nA,null,la,lf); }
   });
 }
 
 function renderPessoaRH(rel,nA,nAnt,la,lf){
-  var acum=(nA||0)+(nAnt||0);
-  var passou=acum>=70;
+  var acum=(nA||0)+(nAnt||0), passou=acum>=70;
   g('rhPSg').innerHTML='<div class="sc2"><div class="val" style="font-size:1.6rem">'+fmt(nA)+'</div><div class="lbl">'+la+'</div></div><div class="sc2"><div class="val" style="font-size:1.6rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">'+lf+'</div></div><div class="sc2"><div class="val" style="font-size:1.6rem;color:'+(passou?'var(--green)':'var(--red)')+'">'+fmt(acum)+'</div><div class="lbl">Acumulado (meta 70)</div></div>';
   var pct=Math.min(acum/200*100,100), mp=70/200*100;
-  g('rhAb').innerHTML='<div class="al"><span>'+(passou?'Meta atingida':'Em progresso')+'</span><span style="font-weight:700">'+fmt(acum)+' / 200 pts</span></div><div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div><div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca os 70 pontos para aprovação.</div>';
+  g('rhAb').innerHTML='<div class="al"><span>'+(passou?'✅ Meta atingida':'⏳ Em progresso')+'</span><span style="font-weight:700">'+fmt(acum)+' / 200 pts</span></div><div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div><div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca os 70 pontos para aprovação.</div>';
   if(rel.ok){
     var tb=g('rhGt'); tb.innerHTML='';
-    for(var i=0;i<rel.criterios.length;i++){
-      var c=rel.criterios[i];
+    rel.criterios.forEach(function(c){
       var lN=c.mediaLider!==null?c.mediaLider/10*PESO:null;
       var aN=c.mediaAuto!==null?c.mediaAuto/10*PESO:null;
       var gap=lN!==null&&aN!==null?lN-aN:null;
@@ -507,7 +661,7 @@ function renderPessoaRH(rel,nA,nAnt,la,lf){
       var tr=document.createElement('tr');
       tr.innerHTML='<td>'+c.nome+'</td><td>'+c.dimensao+'</td><td>'+fmt(lN)+'</td><td>'+fmt(aN)+'</td><td class="'+cls+'">'+gt+'</td>';
       tb.appendChild(tr);
-    }
+    });
   }
 }
 
