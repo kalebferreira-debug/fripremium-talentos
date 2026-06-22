@@ -269,8 +269,11 @@ function apiGet(params, cb){
 }
 
 function apiPost(payload, cb){
-  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-    .then(function(r){ return r.json(); }).then(cb).catch(function(e){ toast('Erro ao salvar.'); console.error(e); });
+  // Apps Script nao suporta CORS para POST de origens externas.
+  // Solucao: enviar como GET com payload serializado em parametro.
+  var params = Object.assign({}, payload);
+  params.respostas = JSON.stringify(payload.respostas);
+  apiGet(params, cb);
 }
 
 // CPF mask
