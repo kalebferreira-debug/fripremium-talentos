@@ -475,6 +475,17 @@ function renderMenu(){
       var badgeCls=sub===0?'bp2':sub===1?'bd':'blk';
       var li=document.createElement('li');
       li.innerHTML='<div class="pi"><div class="nm">'+a.nome+'</div><div class="mt">'+a.cargo+' - '+a.equipe+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+badgeCls+'">'+statusTxt+'</span></div>';
+      // Botao Ver notas (sempre visivel se ja houve auto ou lider)
+      var temDados=(st.submissoes[avCpf]||{}).lider>0 || (st.temLider[avCpf]);
+      // Verificar se colaborador tem autoavaliacao
+      var autoDoColab=false;
+      if(st.minhasNotas && nc(a.cpf)===meuCpf) autoDoColab=st.minhasNotas.auto!==null;
+      var btnVer=document.createElement('button'); btnVer.className='btn bs sm';
+      btnVer.textContent='Ver notas';
+      btnVer.addEventListener('click',(function(av2){ return function(){
+        verNotaRH(av2.cpf,av2.nome,av2.cargo);
+      };})(a));
+      li.querySelector('div:last-child').appendChild(btnVer);
       if(podeAvaliar){
         var btn=document.createElement('button'); btn.className='btn bp sm';
         btn.textContent=sub===0?'Avaliar':'Reavaliar';
@@ -705,50 +716,52 @@ function verNotaRH(cpf,nome,cargo){
   g('rhPSg').innerHTML='<div class="sc2"><div class="val">...</div><div class="lbl">Carregando</div></div>';
   g('rhAb').innerHTML=''; g('rhGt').innerHTML='';
   show('sRHP');
-  // Usar sempre S1 e S2 do ano corrente (filtrado no login)
-  var cicloS1=null, cicloS2=null;
+  // S1 = ciclo aberto agora; S2 = outro ciclo do mesmo ano
+  var cicloAtivo=cicloAberto();
+  var cicloS2=null;
   for(var i=0;i<st.ciclos.length;i++){
-    if(st.ciclos[i].ciclo_id.indexOf('S1')>=0) cicloS1=st.ciclos[i];
-    if(st.ciclos[i].ciclo_id.indexOf('S2')>=0) cicloS2=st.ciclos[i];
+    if(st.ciclos[i].ciclo_id!==cicloAtivo.ciclo_id) cicloS2=st.ciclos[i];
   }
-  var cicloAtivo=cicloAberto(); // qual dos dois está aberto
-  var laS1=cicloS1?cicloS1.label:'S1', laS2=cicloS2?cicloS2.label:'S2';
-  // Buscar dados do S1
-  apiGet({action:'relatorioCiclo',cpf:cpf,cicloId:cicloS1?cicloS1.ciclo_id:''},function(relS1){
-    var nS1=relS1.ok?calcNotaTipo(relS1.criterios,'lider'):null;
-    // Buscar dados do S2 (ciclo atual aberto)
-    apiGet({action:'relatorio',cpf:cpf},function(relS2){
-      var nS2=relS2.ok&&cicloAtivo&&cicloAtivo.ciclo_id.indexOf('S2')>=0?calcNotaTipo(relS2.criterios,'lider'):null;
-      var nAutoAtual=relS2.ok?calcNotaTipo(relS2.criterios,'auto'):null;
-      // Se S1 está aberto, os dados principais vêm do relatorio (não do relatorioCiclo)
-      if(cicloAtivo&&cicloAtivo.ciclo_id.indexOf('S1')>=0){
-        nS1=relS2.ok?calcNotaTipo(relS2.criterios,'lider'):null;
-        nAutoAtual=relS2.ok?calcNotaTipo(relS2.criterios,'auto'):null;
-        nS2=null;
-      }
-      renderPessoaRH(relS2,nS1,nAutoAtual,nS2,laS1,laS2);
-    });
+  var laS1=cicloAtivo?cicloAtivo.label:'S1';
+  var laS2=cicloS2?cicloS2.label:'S2';
+  // Buscar dados do ciclo aberto (S1) via relatorio
+  apiGet({action:'relatorio',cpf:cpf},function(rel){
+    var nS1Lider=rel.ok?calcNotaTipo(rel.criterios,'lider'):null;
+    var nS1Auto=rel.ok?calcNotaTipo(rel.criterios,'auto'):null;
+    // S2 ainda nao ocorreu — sempre null por enquanto
+    renderPessoaRH(rel,nS1Lider,nS1Auto,null,laS1,laS2);
   });
 }
 
-function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
-  // media = (S1 + S2) / 2 ; aprovado se media >= 70
-  var ambos = nAnt!==null && nLider!==null;
-  var media = ambos ? (nAnt + nLider) / 2 : (nAnt||nLider||null);
-  var passou = media!==null && media>=70;
-  var corMedia = media===null?'var(--muted)':passou?'var(--green)':'var(--red)';
+function renderPessoaRH(rel,nS1,nS1Auto,nS2,laS1,laS2){
+  // nS1 = nota lider no S1 (ciclo atual)
+  // nS2 = nota lider no S2 (proximo ciclo, null por enquanto)
+  var ambos=nS1!==null&&nS2!==null;
+  var media=ambos?(nS1+nS2)/2:null;
+  var passou=media!==null&&media>=70;
+  var corS1=nS1!==null?'var(--primary)':'var(--muted)';
+  var corS2=nS2!==null?'var(--muted)':'var(--muted)';
+  var corMedia=passou?'var(--green)':'var(--red)';
   var h='';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+lf+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corMedia+'">'+fmt(media)+'</div><div class="lbl">Média Final</div><div style="font-size:.7rem;color:var(--muted)">Meta: média ≥ 70</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+' — referência</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corS1+'">'+fmt(nS1)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+laS1+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corS2+'">'+fmt(nS2)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+laS2+'</div></div>';
+  // Terceiro card: media se tiver os dois, senao nota S1 com aviso
+  if(ambos){
+    h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corMedia+'">'+fmt(media)+'</div><div class="lbl">Média Final</div><div style="font-size:.7rem;color:var(--muted)">Meta: média ≥ 70</div></div>';
+  } else {
+    h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+(nS1!==null?'var(--primary)':'var(--muted)')+'">'+fmt(nS1)+'</div><div class="lbl">Parcial S1</div><div style="font-size:.7rem;color:#f59e0b">Aguardando S2</div></div>';
+  }
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nS1Auto)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+laS1+' — referência</div></div>';
   g('rhPSg').innerHTML=h;
-  var pct=media!==null?Math.min(media,100):0, mp=70;
-  var statusBar=passou?'✅ Meta atingida':media===null?'Aguardando avaliações':'⏳ Em progresso';
-  var barHtml='<div class="al"><span>'+statusBar+'</span><span style="font-weight:700">'+(media!==null?'Média: '+fmt(media)+' / 100':'--')+'</span></div>';
+  // Barra de progresso
+  var pct=nS1!==null?Math.min(nS1,100):0, mp=70;
+  var statusBar=ambos?(passou?'✅ Meta atingida':'⏳ Em progresso'):'⏳ Aguardando S2';
+  var valorBar=ambos?'Média: '+fmt(media)+' / 100':'S1: '+fmt(nS1)+' / 100';
+  var barHtml='<div class="al"><span>'+statusBar+'</span><span style="font-weight:700">'+valorBar+'</span></div>';
   barHtml+='<div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div>';
-  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca a média 70 necessária para aprovação no ciclo.</div>';
+  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca a média 70 para aprovação no ciclo.</div>';
   g('rhAb').innerHTML=barHtml;
+
   if(rel.ok){
     var tb=g('rhGt'); tb.innerHTML='';
     rel.criterios.forEach(function(c){
@@ -764,7 +777,10 @@ function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
   }
 }
 
-g('btnBRHP').addEventListener('click',function(){ show('sRH'); });
+g('btnBRHP').addEventListener('click',function(){
+  if(st.perfil&&st.perfil.nivel==='admin') show('sRH');
+  else show('sMenu');
+});
 </script>
 </body>
 </html>
