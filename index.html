@@ -744,7 +744,8 @@ function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
   h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+' — referência</div></div>';
   g('rhPSg').innerHTML=h;
   var pct=media!==null?Math.min(media,100):0, mp=70;
-  var barHtml='<div class="al"><span>'+(passou?'✅ Meta atingida':'media===null?'Aguardando avaliações':'⏳ Em progresso'')+'</span><span style="font-weight:700">'+(media!==null?'Média: '+fmt(media)+' / 100':'--')+'</span></div>';
+  var statusBar=passou?'✅ Meta atingida':media===null?'Aguardando avaliações':'⏳ Em progresso';
+  var barHtml='<div class="al"><span>'+statusBar+'</span><span style="font-weight:700">'+(media!==null?'Média: '+fmt(media)+' / 100':'--')+'</span></div>';
   barHtml+='<div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div>';
   barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca a média 70 necessária para aprovação no ciclo.</div>';
   g('rhAb').innerHTML=barHtml;
