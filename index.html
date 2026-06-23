@@ -705,21 +705,29 @@ function verNotaRH(cpf,nome,cargo){
   g('rhPSg').innerHTML='<div class="sc2"><div class="val">...</div><div class="lbl">Carregando</div></div>';
   g('rhAb').innerHTML=''; g('rhGt').innerHTML='';
   show('sRHP');
-  var ca=cicloAberto();
-  var cf=null;
-  var idxAberto=-1;
-  for(var i=0;i<st.ciclos.length;i++){ if(st.ciclos[i].status==='aberto'){ idxAberto=i; break; } }
-  if(idxAberto>0) cf=st.ciclos[idxAberto-1];
-  apiGet({action:'relatorio',cpf:cpf},function(rel){
-    var nLider=rel.ok?calcNotaTipo(rel.criterios,'lider'):null;
-    var nAutoAtual=rel.ok?calcNotaTipo(rel.criterios,'auto'):null;
-    var la=ca?ca.label:'Ciclo atual', lf=cf?cf.label:'Ciclo anterior';
-    if(cf){
-      apiGet({action:'relatorioCiclo',cpf:cpf,cicloId:cf.ciclo_id},function(rAnt){
-        var nAnt=rAnt.ok?calcNotaTipo(rAnt.criterios,'lider'):null;
-        renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf);
-      });
-    } else { renderPessoaRH(rel,nLider,nAutoAtual,null,la,lf); }
+  // Usar sempre S1 e S2 do ano corrente (filtrado no login)
+  var cicloS1=null, cicloS2=null;
+  for(var i=0;i<st.ciclos.length;i++){
+    if(st.ciclos[i].ciclo_id.indexOf('S1')>=0) cicloS1=st.ciclos[i];
+    if(st.ciclos[i].ciclo_id.indexOf('S2')>=0) cicloS2=st.ciclos[i];
+  }
+  var cicloAtivo=cicloAberto(); // qual dos dois está aberto
+  var laS1=cicloS1?cicloS1.label:'S1', laS2=cicloS2?cicloS2.label:'S2';
+  // Buscar dados do S1
+  apiGet({action:'relatorioCiclo',cpf:cpf,cicloId:cicloS1?cicloS1.ciclo_id:''},function(relS1){
+    var nS1=relS1.ok?calcNotaTipo(relS1.criterios,'lider'):null;
+    // Buscar dados do S2 (ciclo atual aberto)
+    apiGet({action:'relatorio',cpf:cpf},function(relS2){
+      var nS2=relS2.ok&&cicloAtivo&&cicloAtivo.ciclo_id.indexOf('S2')>=0?calcNotaTipo(relS2.criterios,'lider'):null;
+      var nAutoAtual=relS2.ok?calcNotaTipo(relS2.criterios,'auto'):null;
+      // Se S1 está aberto, os dados principais vêm do relatorio (não do relatorioCiclo)
+      if(cicloAtivo&&cicloAtivo.ciclo_id.indexOf('S1')>=0){
+        nS1=relS2.ok?calcNotaTipo(relS2.criterios,'lider'):null;
+        nAutoAtual=relS2.ok?calcNotaTipo(relS2.criterios,'auto'):null;
+        nS2=null;
+      }
+      renderPessoaRH(relS2,nS1,nAutoAtual,nS2,laS1,laS2);
+    });
   });
 }
 
@@ -727,7 +735,7 @@ function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
   var acum=(nLider||0)+(nAnt||0), passou=acum>=70;
   var corAcum=passou?'var(--green)':'var(--red)';
   var h='';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+(lf||'Ciclo anterior')+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+lf+'</div></div>';
   h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
   h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corAcum+'">'+fmt(acum)+'</div><div class="lbl">Somatória S1+S2</div><div style="font-size:.7rem;color:var(--muted)">Meta: 70 pts</div></div>';
   h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+' — referência</div></div>';
