@@ -260,7 +260,7 @@ function load(btn,on,lbl){
   else{ btn.innerHTML=btn._l||'OK'; btn.disabled=false; }
 }
 function fmt(n,d){ if(n===null||n===undefined) return '--'; return Number(n).toFixed(d||1); }
-function nc(c){ return String(c).replace(/\D/g,''); }
+function nc(c){ var s=String(c||'').replace(/\D/g,''); return s.length<11?s.padStart(11,'0'):s; }
 function calcNota(cs){
   var v=cs.filter(function(c){ return c.mediaLider!==null&&c.mediaAuto!==null; });
   if(!v.length) return null;
