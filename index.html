@@ -109,6 +109,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
     <div class="subtitle">Sistema de Gestão de Talentos</div>
   </div>
   <div id="hu"></div>
+  <button id="btnSair" class="btn bo sm" style="display:none;margin-left:10px;background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4);font-size:.78rem;padding:5px 12px;">Sair</button>
 </header>
 
 <!-- LOGIN -->
@@ -315,6 +316,7 @@ g('btnE').addEventListener('click',function(){
     st.ciclos=anoMax>0?ciclos.filter(function(c){ return c.ciclo_id.indexOf(String(anoMax))===0; }):ciclos;
     g('hu').textContent=data.nome.split(' ').slice(0,2).join(' ');
     g('hu').style.display='block';
+    g('btnSair').style.display='block';
     if(data.nivel==='admin'){ loadRH(); }
     else { carregarSubmissoes(function(){ renderMenu(); show('sMenu'); }); }
   }
@@ -653,9 +655,16 @@ g('btnResRefazer').addEventListener('click',function(){
 });
 
 // RH
-g('btnBRH').addEventListener('click',function(){
-  st.perfil=null; g('hu').style.display='none'; g('cpf').value=''; show('sLogin');
-});
+function sair(){
+  st.perfil=null; st.crits=[]; st.ciclos=[];
+  st.submissoes={}; st.temLider={}; st.minhasNotas=null;
+  g('hu').style.display='none';
+  g('btnSair').style.display='none';
+  g('cpf').value='';
+  show('sLogin');
+}
+g('btnSair').addEventListener('click', sair);
+g('btnBRH').addEventListener('click', sair);
 
 function loadRH(){
   var ca=cicloAberto();
