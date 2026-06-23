@@ -732,18 +732,21 @@ function verNotaRH(cpf,nome,cargo){
 }
 
 function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
-  var acum=(nLider||0)+(nAnt||0), passou=acum>=70;
-  var corAcum=passou?'var(--green)':'var(--red)';
+  // media = (S1 + S2) / 2 ; aprovado se media >= 70
+  var ambos = nAnt!==null && nLider!==null;
+  var media = ambos ? (nAnt + nLider) / 2 : (nAnt||nLider||null);
+  var passou = media!==null && media>=70;
+  var corMedia = media===null?'var(--muted)':passou?'var(--green)':'var(--red)';
   var h='';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+lf+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corAcum+'">'+fmt(acum)+'</div><div class="lbl">Somatória S1+S2</div><div style="font-size:.7rem;color:var(--muted)">Meta: 70 pts</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+lf+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corMedia+'">'+fmt(media)+'</div><div class="lbl">Média Final</div><div style="font-size:.7rem;color:var(--muted)">Meta: média ≥ 70</div></div>';
   h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+' — referência</div></div>';
   g('rhPSg').innerHTML=h;
-  var pct=Math.min(acum/200*100,100), mp=70/200*100;
-  var barHtml='<div class="al"><span>'+(passou?'✅ Meta atingida':'⏳ Em progresso')+'</span><span style="font-weight:700">'+fmt(acum)+' / 200 pts acumulados</span></div>';
+  var pct=media!==null?Math.min(media,100):0, mp=70;
+  var barHtml='<div class="al"><span>'+(passou?'✅ Meta atingida':'media===null?'Aguardando avaliações':'⏳ Em progresso'')+'</span><span style="font-weight:700">'+(media!==null?'Média: '+fmt(media)+' / 100':'--')+'</span></div>';
   barHtml+='<div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div>';
-  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca os 70 pontos necessários para aprovação.</div>';
+  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca a média 70 necessária para aprovação no ciclo.</div>';
   g('rhAb').innerHTML=barHtml;
   if(rel.ok){
     var tb=g('rhGt'); tb.innerHTML='';
