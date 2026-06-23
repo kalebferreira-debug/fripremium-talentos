@@ -333,10 +333,39 @@ g('btnE').addEventListener('click',function(){
     load(btn,false,'Entrar');
     if(!data||!data.ok){ toast(data&&data.erro?data.erro:'CPF não encontrado.'); return; }
     st.perfil=data; st.crits=crits;
-    // Manter apenas ciclos do ano mais recente para não exibir histórico antigo
-    var anosDisponiveis=ciclos.map(function(c){ return parseInt(c.ciclo_id); }).filter(Boolean);
-    var anoMax=anosDisponiveis.length?Math.max.apply(null,anosDisponiveis):0;
-    st.ciclos=anoMax>0?ciclos.filter(function(c){ return c.ciclo_id.indexOf(String(anoMax))===0; }):ciclos;
+    // Calcular ciclo ativo automaticamente pela data atual
+    // S1 = Jan-Jun (avaliado em Jul-Dez) | S2 = Jul-Dez (avaliado em Jan-Jun do ano seguinte)
+    var hoje=new Date();
+    var mes=hoje.getMonth()+1; // 1-12
+    var ano=hoje.getFullYear();
+    // Jul-Dez: estamos avaliando S1 do ano corrente
+    // Jan-Jun: estamos avaliando S2 do ano anterior
+    var cicloAtivoId, cicloOutroId, anoDisplay;
+    if(mes>=7){
+      cicloAtivoId=String(ano)+'S1';
+      cicloOutroId=String(ano)+'S2';
+      anoDisplay=ano;
+    } else {
+      cicloAtivoId=String(ano-1)+'S2';
+      cicloOutroId=String(ano)+'S1';
+      anoDisplay=ano-1;
+    }
+    // Filtrar apenas os dois ciclos relevantes, marcando status automaticamente
+    st.ciclos=ciclos
+      .filter(function(c){ return c.ciclo_id===cicloAtivoId||c.ciclo_id===cicloOutroId; })
+      .map(function(c){
+        return Object.assign({},c,{
+          status: c.ciclo_id===cicloAtivoId?'aberto':'planejado'
+        });
+      })
+      .sort(function(a,b){ return a.ciclo_id<b.ciclo_id?-1:1; });
+    // Se nao encontrou na planilha, gerar dinamicamente
+    if(st.ciclos.length===0){
+      st.ciclos=[
+        {ciclo_id:cicloAtivoId, label:String(anoDisplay)+' . S1 (avaliado Jul/'+anoDisplay+')', status:'aberto'},
+        {ciclo_id:cicloOutroId, label:String(anoDisplay)+' . S2 (avaliado Jan/'+(anoDisplay+1)+')', status:'planejado'}
+      ];
+    }
     g('hu').textContent=data.nome.split(' ').slice(0,2).join(' ');
     g('hu').style.display='block';
     g('btnSair').style.display='block';
