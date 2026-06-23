@@ -794,8 +794,9 @@ function renderPessoaRH(rel,nS1,nS1Auto,nS2,laS1,laS2){
       var siglaL=pontosSigla(c.mediaLider);
       var siglaA=pontosSigla(c.mediaAuto);
       var gapVal=c.mediaLider!==null&&c.mediaAuto!==null?c.mediaLider-c.mediaAuto:null;
-      var cls=gapVal===null?'':gapVal>0?'gp':gapVal<0?'gn':'gz';
-      var gapTxt=gapVal===null?'--':gapVal===0?'=':gapVal>0?'Líder acima':'Auto acima';
+      // Verde = lider acima, Vermelho = lider abaixo (referencia sempre pelo lider)
+      var cls=gapVal===null?'gz':gapVal>0?'gp':gapVal<0?'gn':'gz';
+      var gapTxt=gapVal===null?'--':gapVal===0?'Igual':gapVal>0?'↑ Líder acima':'↓ Líder abaixo';
       var tr=document.createElement('tr');
       tr.innerHTML='<td>'+c.nome+'</td><td>'+c.dimensao+'</td><td style="font-weight:700;color:var(--primary)">'+siglaL+'</td><td style="color:#374151">'+siglaA+'</td><td class="'+cls+'" style="font-size:.78rem">'+gapTxt+'</td>';
       tb.appendChild(tr);
