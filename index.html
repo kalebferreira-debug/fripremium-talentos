@@ -237,6 +237,23 @@ var DDESC = {
   'Individual':'Características que aparecem nas atitudes, comportamentos e são um diferencial do funcionário'
 };
 var PESO = 100/24;
+function pontosSigla(media){
+  if(media===null) return '--';
+  if(media>=9) return 'EE';
+  if(media>=7) return 'AE';
+  if(media>=5) return 'PM';
+  return 'I';
+}
+function sigla(mediaRaw){
+  // mediaRaw é a média em pontos brutos (0-10)
+  // converte de volta para a sigla mais próxima
+  if(mediaRaw===null||mediaRaw===undefined) return '--';
+  var pts=mediaRaw; // já vem como media de nota_pontos (0,6,8,10)
+  if(pts>=9.5) return 'EE';
+  if(pts>=7)   return 'AE';
+  if(pts>=5)   return 'PM';
+  return 'I';
+}
 
 // Estado global
 var st = {
@@ -774,13 +791,13 @@ function renderPessoaRH(rel,nS1,nS1Auto,nS2,laS1,laS2){
   if(rel.ok){
     var tb=g('rhGt'); tb.innerHTML='';
     rel.criterios.forEach(function(c){
-      var lN=c.mediaLider!==null?c.mediaLider/10*PESO:null;
-      var aN=c.mediaAuto!==null?c.mediaAuto/10*PESO:null;
-      var gap=lN!==null&&aN!==null?lN-aN:null;
-      var cls=gap===null?'':gap>0?'gp':gap<0?'gn':'gz';
-      var gt=gap===null?'--':(gap>0?'+':'')+fmt(gap);
+      var siglaL=pontosSigla(c.mediaLider);
+      var siglaA=pontosSigla(c.mediaAuto);
+      var gapVal=c.mediaLider!==null&&c.mediaAuto!==null?c.mediaLider-c.mediaAuto:null;
+      var cls=gapVal===null?'':gapVal>0?'gp':gapVal<0?'gn':'gz';
+      var gapTxt=gapVal===null?'--':gapVal===0?'=':gapVal>0?'Líder acima':'Auto acima';
       var tr=document.createElement('tr');
-      tr.innerHTML='<td>'+c.nome+'</td><td>'+c.dimensao+'</td><td>'+fmt(lN)+'</td><td>'+fmt(aN)+'</td><td class="'+cls+'">'+gt+'</td>';
+      tr.innerHTML='<td>'+c.nome+'</td><td>'+c.dimensao+'</td><td style="font-weight:700;color:var(--primary)">'+siglaL+'</td><td style="color:#374151">'+siglaA+'</td><td class="'+cls+'" style="font-size:.78rem">'+gapTxt+'</td>';
       tb.appendChild(tr);
     });
   }
