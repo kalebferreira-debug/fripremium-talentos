@@ -319,15 +319,26 @@ g('btnE').addEventListener('click',function(){
   apiGet({action:'ciclos'},function(d){ ciclos=d; check(); });
 });
 
-// Carregar contagem de submissões e verificar se já tem nota do líder
+// Carregar contagem de submissões, notas e verificar se já tem nota do líder
 function carregarSubmissoes(cb){
-  apiGet({action:'respostasRH'},function(rh){
+  var meuCpf=nc(st.perfil.cpf);
+  var done=0;
+  var rh2=null, rel2=null;
+  function finish(){
+    done++;
+    if(done<2) return;
     var ca=cicloAberto();
     var cid=ca?ca.ciclo_id:null;
-    var lider=rh.lider||[], auto=rh.auto||[];
-    var meuCpf=nc(st.perfil.cpf);
+    var lider=(rh2&&rh2.lider)||[], auto=(rh2&&rh2.auto)||[];
     st.submissoes={};
     st.temLider={};
+    st.minhasNotas={lider:null,auto:null};
+
+    // Notas do próprio colaborador vindas do relatorio
+    if(rel2&&rel2.ok){
+      st.minhasNotas.lider=calcNotaTipo(rel2.criterios,'lider');
+      st.minhasNotas.auto=calcNotaTipo(rel2.criterios,'auto');
+    }
 
     // Contar submissões do lider para cada avaliado
     var contLider={};
@@ -335,22 +346,19 @@ function carregarSubmissoes(cb){
       if(String(r.ciclo_id)!==String(cid)) return;
       var avCpf=nc(r.avaliado_cpf);
       var avdorCpf=nc(r.avaliador_cpf);
-      // submissões que EU fiz como líder
       if(avdorCpf===meuCpf){
         if(!contLider[avCpf]) contLider[avCpf]=0;
         contLider[avCpf]++;
       }
-      // verificar se colaborador já tem nota do líder
       if(!st.temLider[avCpf]) st.temLider[avCpf]=false;
       st.temLider[avCpf]=true;
     });
-    // Contar por avaliado (dividir por 24 critérios = 1 submissão)
     Object.keys(contLider).forEach(function(cpf){
       if(!st.submissoes[cpf]) st.submissoes[cpf]={lider:0,auto:0};
       st.submissoes[cpf].lider=Math.round(contLider[cpf]/24);
     });
 
-    // Contar autoavaliações do próprio colaborador
+    // Contar autoavaliações
     var contAuto=0;
     auto.forEach(function(r){
       if(String(r.ciclo_id)!==String(cid)) return;
@@ -359,7 +367,9 @@ function carregarSubmissoes(cb){
     if(!st.submissoes[meuCpf]) st.submissoes[meuCpf]={lider:0,auto:0};
     st.submissoes[meuCpf].auto=Math.round(contAuto/24);
     cb();
-  });
+  }
+  apiGet({action:'respostasRH'},function(rh){ rh2=rh; finish(); });
+  apiGet({action:'relatorio',cpf:st.perfil.cpf},function(rel){ rel2=rel; finish(); });
 }
 
 function cicloAberto(){
@@ -374,37 +384,81 @@ function renderMenu(){
   var meuCpf=nc(p.cpf);
   var subAuto=(st.submissoes[meuCpf]||{}).auto||0;
   var jaTemLider=st.temLider[meuCpf]||false;
+  var notaAuto=st.minhasNotas?st.minhasNotas.auto:null;
+  var notaLider=st.minhasNotas?st.minhasNotas.lider:null;
 
-  // Bloco de autoavaliação
+  // Bloco de autoavaliação + notas
   var sebWrap=g('sebWrap'); sebWrap.innerHTML='';
+
   if(subAuto===0){
-    // Pode fazer pela primeira vez
+    // Nunca avaliou — convite para iniciar
     var div=document.createElement('div'); div.className='seb';
     div.innerHTML='<div class="txt"><strong>Minha Autoavaliação</strong><br>Avalie o seu próprio desempenho no ciclo atual.</div>';
     var btnA=document.createElement('button'); btnA.className='btn bp sm'; btnA.textContent='Iniciar';
     btnA.addEventListener('click',function(){ iniciarAuto(); });
     div.appendChild(btnA); sebWrap.appendChild(div);
-  } else if(subAuto===1 && !jaTemLider){
-    // Pode refazer UMA vez (líder ainda não avaliou)
-    var div=document.createElement('div'); div.className='seb';
-    div.innerHTML='<div class="txt"><strong>Minha Autoavaliação</strong><br>Você já enviou. Pode refazer uma vez enquanto o líder não avaliar.</div>';
-    var btnA=document.createElement('button'); btnA.className='btn bo sm'; btnA.textContent='Rever';
-    btnA.addEventListener('click',function(){ iniciarAuto(); });
-    div.appendChild(btnA); sebWrap.appendChild(div);
-  } else if(subAuto>=1){
-    // Bloqueada (ou líder já avaliou, ou já refez)
-    var msg = jaTemLider
-      ? 'Sua autoavaliação foi enviada. A reunião de feedback foi agendada com seu líder.'
-      : 'Você já utilizou sua reavaliação. Aguarde o retorno do seu líder.';
-    var div=document.createElement('div'); div.className='seb-block';
-    div.innerHTML='<strong>Minha Autoavaliação</strong><br>'+msg;
+  } else {
+    // Já tem pelo menos uma autoavaliação — mostrar painel de notas
+    var div=document.createElement('div');
+    div.style='background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 18px;margin-bottom:14px;';
+
+    // Título
+    var tit=document.createElement('div');
+    tit.style='font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;';
+    tit.textContent='Minha Avaliação — Ciclo Atual';
+    div.appendChild(tit);
+
+    // Notas lado a lado
+    var row=document.createElement('div');
+    row.style='display:flex;gap:12px;margin-bottom:14px;';
+
+    // Nota auto
+    var boxA=document.createElement('div');
+    boxA.style='flex:1;background:#1e2530;border-radius:8px;padding:16px;text-align:center;color:#fff;';
+    boxA.innerHTML='<div style="font-size:2.2rem;font-weight:700;line-height:1">'+(notaAuto!==null?fmt(notaAuto):'--')+'</div><div style="font-size:.75rem;margin-top:5px;opacity:.75;">Minha Autoavaliação</div>';
+    row.appendChild(boxA);
+
+    // Nota líder
+    var boxL=document.createElement('div');
+    if(notaLider!==null){
+      boxL.style='flex:1;background:#c8102e;border-radius:8px;padding:16px;text-align:center;color:#fff;';
+      boxL.innerHTML='<div style="font-size:2.2rem;font-weight:700;line-height:1">'+fmt(notaLider)+'</div><div style="font-size:.75rem;margin-top:5px;opacity:.75;">Nota do Líder <span style="font-size:.65rem">(oficial)</span></div>';
+    } else {
+      boxL.style='flex:1;background:#f1f5f9;border-radius:8px;padding:16px;text-align:center;color:var(--muted);';
+      boxL.innerHTML='<div style="font-size:2.2rem;font-weight:700;line-height:1">--</div><div style="font-size:.75rem;margin-top:5px;">Aguardando líder</div>';
+    }
+    row.appendChild(boxL);
+    div.appendChild(row);
+
+    // Ação disponível
+    if(subAuto===1 && !jaTemLider){
+      // Pode refazer uma vez
+      var msg=document.createElement('div');
+      msg.style='font-size:.8rem;color:var(--muted);margin-bottom:10px;';
+      msg.textContent='Você pode refazer sua autoavaliação enquanto seu líder ainda não avaliou.';
+      div.appendChild(msg);
+      var btnR=document.createElement('button'); btnR.className='btn bo sm';
+      btnR.textContent='Refazer Autoavaliação';
+      btnR.addEventListener('click',function(){ iniciarAuto(); });
+      div.appendChild(btnR);
+    } else if(notaLider!==null){
+      var msg=document.createElement('div');
+      msg.style='font-size:.8rem;color:var(--green);font-weight:600;';
+      msg.textContent='✓ Avaliação concluída. A nota oficial é a do seu líder.';
+      div.appendChild(msg);
+    } else {
+      var msg=document.createElement('div');
+      msg.style='font-size:.8rem;color:var(--muted);';
+      msg.textContent='Aguardando avaliação do seu líder.';
+      div.appendChild(msg);
+    }
+
     sebWrap.appendChild(div);
   }
 
   // Lista de avaliáveis (só para líder/encarregado)
   var list=g('pList'); list.innerHTML='';
   var av=p.avaliaveis||[];
-  // Filtrar: não mostrar a si mesmo na lista de avaliáveis
   av=av.filter(function(a){ return nc(a.cpf)!==meuCpf; });
   g('mSub').textContent=av.length?av.length+' colaborador(es) para avaliar neste ciclo:':'';
 
@@ -412,14 +466,13 @@ function renderMenu(){
     (function(a){
       var avCpf=nc(a.cpf);
       var sub=(st.submissoes[avCpf]||{}).lider||0;
-      var podeAvaliar=sub<2; // máximo 2 submissões
+      var podeAvaliar=sub<2;
       var statusTxt=sub===0?'Pendente':sub===1?'Avaliado (1ª vez)':'Concluído';
       var badgeCls=sub===0?'bp2':sub===1?'bd':'blk';
       var li=document.createElement('li');
       li.innerHTML='<div class="pi"><div class="nm">'+a.nome+'</div><div class="mt">'+a.cargo+' - '+a.equipe+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+badgeCls+'">'+statusTxt+'</span></div>';
       if(podeAvaliar){
-        var btn=document.createElement('button');
-        btn.className='btn bp sm';
+        var btn=document.createElement('button'); btn.className='btn bp sm';
         btn.textContent=sub===0?'Avaliar':'Reavaliar';
         btn.addEventListener('click',function(){
           st.avAtual={cpf:a.cpf,nome:a.nome,cargo:a.cargo};
