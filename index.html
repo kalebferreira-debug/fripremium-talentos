@@ -649,9 +649,19 @@ function loadRH(){
   var cid=ca?ca.ciclo_id:null;
   apiGet({action:'respostasRH'},function(rh){
     var lider=rh.lider||[], auto=rh.auto||[];
-    var comL={}, comA={};
+    var comL={}, contAuto={};
     lider.forEach(function(r){ if(String(r.ciclo_id)===String(cid)) comL[nc(r.avaliado_cpf)]=1; });
-    auto.forEach(function(r){ if(String(r.ciclo_id)===String(cid)) comA[nc(r.avaliado_cpf)]=1; });
+    // Contar submissões de autoavaliação (cada submissão = 24 linhas)
+    auto.forEach(function(r){
+      if(String(r.ciclo_id)!==String(cid)) return;
+      var cpfN=nc(r.avaliado_cpf);
+      if(!contAuto[cpfN]) contAuto[cpfN]=0;
+      contAuto[cpfN]++;
+    });
+    // Converter contagem de linhas em número de submissões
+    Object.keys(contAuto).forEach(function(cpf){ contAuto[cpf]=Math.round(contAuto[cpf]/24); });
+    var comA={}; // compatibilidade: pelo menos 1 autoavaliação
+    Object.keys(contAuto).forEach(function(cpf){ if(contAuto[cpf]>0) comA[cpf]=1; });
     var avCount=todos.filter(function(p){ return comL[nc(p.cpf)]&&comA[nc(p.cpf)]; }).length;
     g('rhSg').innerHTML='<div class="sc2"><div class="val">'+todos.length+'</div><div class="lbl">Total</div></div><div class="sc2"><div class="val" style="color:var(--green)">'+avCount+'</div><div class="lbl">Avaliados</div></div><div class="sc2"><div class="val" style="color:var(--red)">'+(todos.length-avCount)+'</div><div class="lbl">Pendentes</div></div>';
     var eqs={};
@@ -665,8 +675,16 @@ function loadRH(){
       var sec=document.createElement('div'); sec.className='eq';
       var rows='';
       ms.forEach(function(p){
-        var ok=comL[nc(p.cpf)]&&comA[nc(p.cpf)];
-        rows+='<div class="rp"><div class="rpi"><div class="nm">'+p.nome+'</div><div class="mt">'+p.cargo+'</div></div><div style="display:flex;align-items:center;gap:7px;"><span class="badge '+(ok?'bd':'bp2')+'">'+(ok?'Avaliado':'Pendente')+'</span><button class="btn bs sm" data-cpf="'+p.cpf+'" data-nome="'+p.nome+'" data-cargo="'+p.cargo+'">Ver nota</button></div></div>';
+        var cpfN=nc(p.cpf);
+        var temLider=comL[cpfN]||0;
+        var nAuto=contAuto[cpfN]||0;
+        // Badge autoavaliação
+        var badgeAutoTxt=nAuto===0?'Auto: pendente':nAuto===1?'Auto: 1 envio':'Auto: finalizada';
+        var badgeAutoCls=nAuto===0?'bp2':nAuto===1?'bd':'blk';
+        // Badge líder
+        var badgeLiderTxt=temLider?'Líder: avaliou':'Líder: pendente';
+        var badgeLiderCls=temLider?'bd':'bp2';
+        rows+='<div class="rp"><div class="rpi"><div class="nm">'+p.nome+'</div><div class="mt">'+p.cargo+'</div></div><div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;"><span class="badge '+badgeLiderCls+'">'+badgeLiderTxt+'</span><span class="badge '+badgeAutoCls+'">'+badgeAutoTxt+'</span><button class="btn bs sm" data-cpf="'+p.cpf+'" data-nome="'+p.nome+'" data-cargo="'+p.cargo+'">Ver nota</button></div></div>';
       });
       sec.innerHTML='<div class="eh" onclick="this.nextElementSibling.nextElementSibling.classList.toggle(\'on\')"><div><div class="en">'+eq+'</div><div class="es">'+avE+' de '+ms.length+' avaliados</div></div><span style="color:var(--muted);font-size:.82rem">'+pct+'%</span></div><div class="ep"><div class="eb2" style="width:'+pct+'%"></div></div><div class="ebody">'+rows+'</div>';
       cont.appendChild(sec);
