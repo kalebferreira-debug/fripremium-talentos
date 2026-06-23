@@ -68,7 +68,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 .notas-row{display:flex;gap:12px;margin-bottom:20px;}
 .resultado-aviso{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#92400e;margin-bottom:16px;}
 /* RH */
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
 .sc2{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;text-align:center;}
 .sc2 .val{font-size:1.7rem;font-weight:700;color:var(--primary);}
 .sc2 .lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
@@ -719,25 +719,17 @@ function verNotaRH(cpf,nome,cargo){
 
 function renderPessoaRH(rel,nLider,nAutoAtual,nAnt,la,lf){
   var acum=(nLider||0)+(nAnt||0), passou=acum>=70;
-  var falta=passou?0:Math.max(0,70-acum);
-  // Cards: nota lider ciclo atual, nota auto ciclo atual, nota lider ciclo anterior
+  var corAcum=passou?'var(--green)':'var(--red)';
   var h='';
-  h+='<div class="sc2"><div class="val" style="font-size:1.5rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota do Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.5rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
-  h+='<div class="sc2"><div class="val" style="font-size:1.5rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Líder ciclo anterior</div><div style="font-size:.7rem;color:var(--muted)">'+(lf||'—')+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--muted)">'+fmt(nAnt)+'</div><div class="lbl">Nota S1 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+(lf||'Ciclo anterior')+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:var(--primary)">'+fmt(nLider)+'</div><div class="lbl">Nota S2 — Líder</div><div style="font-size:.7rem;color:var(--muted)">'+la+'</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:'+corAcum+'">'+fmt(acum)+'</div><div class="lbl">Somatória S1+S2</div><div style="font-size:.7rem;color:var(--muted)">Meta: 70 pts</div></div>';
+  h+='<div class="sc2"><div class="val" style="font-size:1.4rem;color:#374151">'+fmt(nAutoAtual)+'</div><div class="lbl">Autoavaliação</div><div style="font-size:.7rem;color:var(--muted)">'+la+' — referência</div></div>';
   g('rhPSg').innerHTML=h;
   var pct=Math.min(acum/200*100,100), mp=70/200*100;
   var barHtml='<div class="al"><span>'+(passou?'✅ Meta atingida':'⏳ Em progresso')+'</span><span style="font-weight:700">'+fmt(acum)+' / 200 pts acumulados</span></div>';
   barHtml+='<div class="ab3"><div class="af" style="width:'+pct+'%;background:'+(passou?'#16a34a':'var(--primary)')+'"></div><div class="am" style="left:'+mp+'%"></div></div>';
-  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca os 70 pontos para aprovação.</div>';
-  if(!passou){
-    var cor=falta>60?'var(--red)':falta>30?'var(--yellow)':'#16a34a';
-    barHtml+='<div style="margin-top:12px;background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">';
-    barHtml+='<div style="font-size:.85rem;color:var(--text)">Nota mínima necessária no próximo ciclo (S2)</div>';
-    barHtml+='<div style="font-size:1.6rem;font-weight:700;color:'+cor+'">'+fmt(falta)+'</div></div>';
-  } else {
-    barHtml+='<div style="margin-top:12px;background:var(--gbg);border:1.5px solid #86efac;border-radius:8px;padding:10px 14px;font-size:.85rem;color:var(--green);font-weight:600;">✓ Colaborador atingiu a meta de 70 pontos.</div>';
-  }
+  barHtml+='<div style="font-size:.74rem;color:var(--muted);margin-top:4px;text-align:right">A linha marca os 70 pontos necessários para aprovação.</div>';
   g('rhAb').innerHTML=barHtml;
   if(rel.ok){
     var tb=g('rhGt'); tb.innerHTML='';
