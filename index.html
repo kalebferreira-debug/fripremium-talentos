@@ -703,7 +703,9 @@ function verNotaRH(cpf,nome,cargo){
   show('sRHP');
   var ca=cicloAberto();
   var cf=null;
-  for(var i=st.ciclos.length-1;i>=0;i--){ if(st.ciclos[i].status==='fechado'){ cf=st.ciclos[i]; break; } }
+  var idxAberto=-1;
+  for(var i=0;i<st.ciclos.length;i++){ if(st.ciclos[i].status==='aberto'){ idxAberto=i; break; } }
+  if(idxAberto>0) cf=st.ciclos[idxAberto-1];
   apiGet({action:'relatorio',cpf:cpf},function(rel){
     var nLider=rel.ok?calcNotaTipo(rel.criterios,'lider'):null;
     var nAutoAtual=rel.ok?calcNotaTipo(rel.criterios,'auto'):null;
