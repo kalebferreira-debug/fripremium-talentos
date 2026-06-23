@@ -308,7 +308,11 @@ g('btnE').addEventListener('click',function(){
     if(done<3) return;
     load(btn,false,'Entrar');
     if(!data||!data.ok){ toast(data&&data.erro?data.erro:'CPF não encontrado.'); return; }
-    st.perfil=data; st.crits=crits; st.ciclos=ciclos;
+    st.perfil=data; st.crits=crits;
+    // Manter apenas ciclos do ano mais recente para não exibir histórico antigo
+    var anosDisponiveis=ciclos.map(function(c){ return parseInt(c.ciclo_id); }).filter(Boolean);
+    var anoMax=anosDisponiveis.length?Math.max.apply(null,anosDisponiveis):0;
+    st.ciclos=anoMax>0?ciclos.filter(function(c){ return c.ciclo_id.indexOf(String(anoMax))===0; }):ciclos;
     g('hu').textContent=data.nome.split(' ').slice(0,2).join(' ');
     g('hu').style.display='block';
     if(data.nivel==='admin'){ loadRH(); }
