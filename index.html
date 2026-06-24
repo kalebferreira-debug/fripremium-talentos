@@ -8,7 +8,7 @@
 :root{--primary:#c8102e;--bg:#f4f6f9;--card:#fff;--text:#1e2530;--muted:#6b7280;--border:#d1d5db;--green:#166534;--gbg:#dcfce7;--yellow:#854d0e;--ybg:#fef9c3;--red:#dc2626;--r:10px;--sh:0 2px 12px rgba(0,0,0,.1);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-header{background:#fff;color:var(--primary);padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;border-bottom:3px solid var(--primary);}
+header{background:#fff;color:var(--primary);padding:14px 24px;display:flex;align-items:center;justify-content:center!important;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;border-bottom:3px solid var(--primary);text-align:center;}
 .hlogo{height:46px;width:auto;object-fit:contain;display:block;}
 .logo{font-size:1.25rem;font-weight:700;}
 .subtitle{font-size:.8rem;opacity:.75;}
@@ -109,7 +109,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 </head>
 <body>
 <header>
-  <div style="text-align:center">
+  <div style="text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;">
     <img src="logo.png" alt="FriPremium" class="hlogo" style="display:none" onload="this.style.display='block';document.getElementById('htxt').style.display='none';" onerror="this.style.display='none'">
     <div id="htxt">
       <div class="logo">Frigorífico FriPremium</div>
