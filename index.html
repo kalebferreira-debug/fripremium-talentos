@@ -134,7 +134,10 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 <!-- MENU COLABORADOR/LIDER -->
 <div id="sMenu" class="sc">
   <div class="card">
-    <h2 id="mGr">Bem-vindo</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <h2 id="mGr" style="margin:0;">Bem-vindo</h2>
+      <button id="btnPainelRH" class="btn bp sm" style="display:none;">📊 Painel RH</button>
+    </div>
     <div id="sebWrap"></div>
     <p class="hint" id="mSub" style="margin-bottom:10px;"></p>
     <ul class="pl" id="pList"></ul>
@@ -173,7 +176,7 @@ input[type=text]:focus{outline:none;border-color:var(--primary);}
 <!-- PAINEL RH -->
 <div id="sRH" class="sc">
   <div class="br">
-    <button class="btn bo sm" id="btnBRH">← Sair</button>
+    <button class="btn bo sm" id="btnBRH">← Voltar</button>
     <span class="ctx">Painel da Gestão de Pessoas</span>
   </div>
   <div class="card">
@@ -384,8 +387,8 @@ g('btnE').addEventListener('click',function(){
     g('hu').textContent=data.nome.split(' ').slice(0,2).join(' ');
     g('hu').style.display='block';
     g('btnSair').style.display='block';
-    if(data.nivel==='admin'){ loadRH(); }
-    else { carregarSubmissoes(function(){ renderMenu(); show('sMenu'); }); }
+    // Admin tambem carrega o menu de avaliacao (alem do painel RH)
+    carregarSubmissoes(function(){ renderMenu(); show('sMenu'); });
   }
   apiGet({action:'login',cpf:cpf},function(d){ data=d; check(); });
   apiGet({action:'criterios'},function(d){ crits=d; check(); });
@@ -454,6 +457,13 @@ function cicloAberto(){
 function renderMenu(){
   var p=st.perfil;
   g('mGr').textContent='Olá, '+p.nome.split(' ').slice(0,2).join(' ')+'!';
+  // Botao Painel RH visivel apenas para admin
+  if(p.nivel==='admin'){
+    g('btnPainelRH').style.display='inline-block';
+    g('btnPainelRH').onclick=function(){ loadRH(); };
+  } else {
+    g('btnPainelRH').style.display='none';
+  }
   var meuCpf=nc(p.cpf);
   var subAuto=(st.submissoes[meuCpf]||{}).auto||0;
   var jaTemLider=st.temLider[meuCpf]||false;
@@ -789,7 +799,7 @@ function sair(){
   show('sLogin');
 }
 g('btnSair').addEventListener('click', sair);
-g('btnBRH').addEventListener('click', sair);
+g('btnBRH').addEventListener('click', function(){ show('sMenu'); });
 
 function loadRH(){
   var ca=cicloAberto();
